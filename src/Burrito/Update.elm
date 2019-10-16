@@ -118,7 +118,7 @@ map7 f a b c d e =
 
     map (+) (save 4)
 
-we end up with a result of type `Update (number -> number) c e`. To apply the function inside this value to another `Update number c e` value, we can write&hellip;
+we end up with a result of type `Update (number -> number) c`. To apply the function inside this value to another `Update number c` value, we can write&hellip;
 
     map (+) (save 4) |> andMap (save 5)
 
