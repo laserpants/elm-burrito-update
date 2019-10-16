@@ -38,13 +38,13 @@ These functions address the need to map over functions of more than one argument
 -}
 
 
-{-| A type wrapper for Elm's `( model, Cmd msg )` tuple.
+{-| Type wrapper for Elm's `( model, Cmd msg )` tuple.
 -}
 type alias Update a m z =
     ( a, List (Cmd m), List z )
 
 
-{-| Simpler version of `Update` that is sufficient in most cases.
+{-| A simpler version of `Update` that is sufficient in most cases.
 -}
 type alias PlainUpdate a m =
     Update a m ()
