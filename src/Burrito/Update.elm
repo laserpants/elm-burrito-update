@@ -3,7 +3,7 @@ module Burrito.Update exposing
     , andThen, sequence
     , andMap, ap, map2, map3, map4, map5, map6, map7
     , run, run2, run3
-    , andAddCmd
+    , andAddCmd, with
     )
 
 {-| Monadic-style interface for state updates.
@@ -33,7 +33,7 @@ These functions address the need to map over functions of more than one argument
 
 # Helpers
 
-@docs andAddCmd
+@docs andAddCmd, with
 
 -}
 
@@ -226,6 +226,31 @@ mapCmd f ( model, cmds, zs ) =
 andAddCmd : Cmd m -> UpdateT a m z -> UpdateT a m z
 andAddCmd =
     andThen << addCmd
+
+
+{-| Combinator useful for pointfree style. For example, to get rid of the lambda in the following code;
+
+    update msg state =
+        case msg of
+            Click ->
+                state
+                    |> updateSomething
+                    |> andThen (\s -> setCounterValue (s.counter + 1) s)
+
+we can write:
+
+    update msg state =
+        case msg of
+            Click ->
+                state
+                    |> updateSomething
+                    |> andThen (with .counter (setCounterValue << (+) 1))
+
+-}
+with : (a -> b) -> (b -> a -> c) -> a -> c
+with get f model =
+    f (get model) model
+
 
 
 exec : UpdateT a m z -> ( a, Cmd m )
