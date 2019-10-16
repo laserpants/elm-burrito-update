@@ -228,21 +228,21 @@ exec ( model, cmds ) =
     ( model, Cmd.batch cmds )
 
 
-{-| TODO
+{-| Translate a function that returns an `Update` into one that returns a plain `( model, cmd )` pair.
 -}
 run : (p -> Update a m) -> p -> ( a, Cmd m )
 run f =
     exec << f
 
 
-{-| TODO
+{-| Same as [`run`](#run), but for functions of two arguments.
 -}
 run2 : (p -> q -> Update a m) -> p -> q -> ( a, Cmd m )
 run2 f a =
     exec << f a
 
 
-{-| TODO
+{-| Same as [`run`](#run), but for functions of three arguments.
 -}
 run3 : (p -> q -> r -> Update a m) -> p -> q -> r -> ( a, Cmd m )
 run3 f a b =

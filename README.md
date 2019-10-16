@@ -1,3 +1,3 @@
-# elm-burrito-update
+# Elm Burrito Update
 
 TODO
