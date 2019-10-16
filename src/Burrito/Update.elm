@@ -44,7 +44,7 @@ type alias Update a m z =
     ( a, List (Cmd m), List z )
 
 
-{-| A simpler version of `Update` that is sufficient in most cases.
+{-| A simpler version of `Update` which is sufficient in most cases.
 -}
 type alias PlainUpdate a m =
     Update a m ()

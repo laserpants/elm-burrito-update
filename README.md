@@ -25,24 +25,24 @@ type alias Model =
     }
 
 
-setMessage : String -> Model -> Update Model msg
+setMessage : String -> Model -> PlainUpdate Model msg
 setMessage message model =
     save { model | message = message }
 
 
-incrementCounter : Model -> Update Model msg
+incrementCounter : Model -> PlainUpdate Model msg
 incrementCounter model =
     save { model | count = model.count + 1 }
 
 
-init : () -> Update Model Msg
+init : () -> PlainUpdate Model Msg
 init () =
     save Model
         |> andMap (save "Nothing much going on here.")
         |> andMap (save 0)
 
 
-update : Msg -> Model -> Update Model Msg
+update : Msg -> Model -> PlainUpdate Model Msg
 update msg model =
     case msg of
         ButtonClicked ->
