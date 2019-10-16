@@ -11,7 +11,7 @@ module Burrito.Update exposing
 
 # Update
 
-@docs Update, save, addCmd, map, mapCmd, join, kleisli
+@docs UpdateT, Update, save, addCmd, map, mapCmd, join, kleisli
 
 
 ## Chaining Updates
@@ -38,6 +38,8 @@ These functions address the need to map over functions of more than one argument
 -}
 
 
+{-| TODO
+-}
 type alias UpdateT a m z =
     ( a, List (Cmd m), List z )
 
@@ -185,7 +187,7 @@ kleisli f g =
     andThen f << g
 
 
-{-| Take a list of `a -> Update a m`s and run them sequentially, in a left-to-right manner.
+{-| Take a list of `a -> Update a m` values and run them sequentially, in a left-to-right manner.
 -}
 sequence : List (a -> UpdateT a m z) -> a -> UpdateT a m z
 sequence list model =
