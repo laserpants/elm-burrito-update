@@ -183,11 +183,11 @@ kleisli f g =
     andThen f << g
 
 
-{-| TODO
+{-| Run a sequence of `Update`s.
 -}
 sequence : List (a -> Update a m) -> a -> Update a m
 sequence list model =
-    List.foldr andThen (save model) list
+    List.foldl andThen (save model) list
 
 
 {-| Add a command to an `Update` pipeline. For example;
