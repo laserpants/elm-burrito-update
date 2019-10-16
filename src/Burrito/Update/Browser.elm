@@ -21,11 +21,11 @@ where `init` and `update` are based on the `Update` type of this library.
 
 -}
 application :
-    { init : flags -> Url -> Navigation.Key -> Update model msg
+    { init : flags -> Url -> Navigation.Key -> Update model msg a
     , onUrlChange : Url -> msg
     , onUrlRequest : UrlRequest -> msg
     , subscriptions : model -> Sub msg
-    , update : msg -> model -> Update model msg
+    , update : msg -> model -> Update model msg a
     , view : model -> Document msg
     }
     -> Program flags model msg
@@ -49,9 +49,9 @@ where `init` and `update` are based on the `Update` type of this library.
 
 -}
 document :
-    { init : flags -> Update model msg
+    { init : flags -> Update model msg a
     , subscriptions : model -> Sub msg
-    , update : msg -> model -> Update model msg
+    , update : msg -> model -> Update model msg a
     , view : model -> Document msg
     }
     -> Program flags model msg

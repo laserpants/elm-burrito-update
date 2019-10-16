@@ -16,18 +16,18 @@ type alias Model =
     }
 
 
-setMessage : String -> Model -> Update Model msg
+setMessage : String -> Model -> PlainUpdate Model msg
 setMessage message model =
     save { model | message = message }
 
 
-init : () -> Update Model Msg
+init : () -> PlainUpdate Model Msg
 init () =
     save Model
         |> andMap (save "Nothing much going on here.")
 
 
-update : Msg -> Model -> Update Model Msg
+update : Msg -> Model -> PlainUpdate Model Msg
 update msg =
     case msg of
         ButtonClicked ->
