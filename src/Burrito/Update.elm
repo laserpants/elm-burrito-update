@@ -1,5 +1,5 @@
 module Burrito.Update exposing
-    ( Update, UpdateT, save, addCmd, map, mapCmd, join, kleisli
+    ( UpdateT, Update, save, addCmd, map, mapCmd, join, kleisli
     , andThen, sequence
     , andMap, ap, map2, map3, map4, map5, map6, map7
     , run, run2, run3
@@ -46,7 +46,8 @@ type alias UpdateT a m z =
 
 {-| A type wrapper for Elm's `( model, Cmd msg )` tuple.
 -}
-type alias Update a m = UpdateT a m ()
+type alias Update a m =
+    UpdateT a m ()
 
 
 {-| Lifts a value into the `Update` context. For example,
