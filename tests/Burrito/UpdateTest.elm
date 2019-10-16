@@ -1,4 +1,4 @@
-module Burrito.UpdateTest exposing (..)
+module Burrito.UpdateTest exposing (suite, testAddCmd, testAndMap, testJoin, testMap, testMap2, testMap3, testSave, testSequence)
 
 import Burrito.Update exposing (..)
 import Expect exposing (Expectation)
@@ -133,21 +133,22 @@ testAddCmd =
 
 testSequence : Test
 testSequence =
-
-    let 
+    let
         cmds1 =
-          [ always (save 1)
-          , always (save 3)
-          ]
+            [ always (save 1)
+            , always (save 3)
+            ]
 
         cmds2 =
-          [ \x -> save (x/2)
-          , \y -> save (y+1)
-          ]
+            [ \x -> save (x / 2)
+            , \y -> save (y + 1)
+            ]
 
-        d = sequence cmds1 5
-        e = sequence cmds2 8
+        d =
+            sequence cmds1 5
 
+        e =
+            sequence cmds2 8
     in
     describe "sequence"
         [ test "expect the value to be 3" <|
@@ -155,7 +156,6 @@ testSequence =
         , test "expect the result of 8/2+1 to be 5" <|
             \_ -> Expect.equal e (save 5)
         ]
-
 
 
 suite : Test
