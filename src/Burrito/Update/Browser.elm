@@ -15,17 +15,17 @@ import Url exposing (Url)
 {-| Used as a drop-in replacement for `Browser.application`, but instead creates a `Program`
 where `init` and `update` are based on the `Update` type of this library.
 
-    init : flags -> Url -> Navigation.Key -> Update model msg
+    init : flags -> Url -> Navigation.Key -> PlainUpdate model msg
 
-    update : msg -> model -> Update model msg
+    update : msg -> model -> PlainUpdate model msg
 
 -}
 application :
-    { init : flags -> Url -> Navigation.Key -> Update model msg a
+    { init : flags -> Url -> Navigation.Key -> Update model msg o
     , onUrlChange : Url -> msg
     , onUrlRequest : UrlRequest -> msg
     , subscriptions : model -> Sub msg
-    , update : msg -> model -> Update model msg a
+    , update : msg -> model -> Update model msg o
     , view : model -> Document msg
     }
     -> Program flags model msg
@@ -43,15 +43,15 @@ application config =
 {-| Used as a drop-in replacement for `Browser.document`, but instead creates a `Program`
 where `init` and `update` are based on the `Update` type of this library.
 
-    init : flags -> Update model msg
+    init : flags -> PlainUpdate model msg
 
-    update : msg -> model -> Update model msg
+    update : msg -> model -> PlainUpdate model msg
 
 -}
 document :
-    { init : flags -> Update model msg a
+    { init : flags -> Update model msg o
     , subscriptions : model -> Sub msg
-    , update : msg -> model -> Update model msg a
+    , update : msg -> model -> Update model msg o
     , view : model -> Document msg
     }
     -> Program flags model msg

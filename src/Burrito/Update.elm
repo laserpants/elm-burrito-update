@@ -65,15 +65,15 @@ save model =
 {-| See [`andMap`](#andMap). This function is the same but with the arguments interchanged.
 -}
 ap : Update (a -> b) x o -> Update a x o -> Update b x o
-ap ( f, cmds1, zs1 ) ( model, cmds2, zs2 ) =
-    ( f model, cmds1 ++ cmds2, zs1 ++ zs2 )
+ap ( f, cmds1, xtra1 ) ( model, cmds2, xtra2 ) =
+    ( f model, cmds1 ++ cmds2, xtra1 ++ xtra2 )
 
 
 {-| Apply a function to the state portion of a value.
 -}
 map : (a -> b) -> Update a x o -> Update b x o
-map f ( model, cmds, zs ) =
-    ( f model, cmds, zs )
+map f ( model, cmds, xtra ) =
+    ( f model, cmds, xtra )
 
 
 {-| Apply a function of two arguments to the state portion of a value.
@@ -157,8 +157,8 @@ andMap a b =
 functions in this library are implemented in terms of `join`. In particular, `andThen f = join << map f`
 -}
 join : Update (Update a x o) x o -> Update a x o
-join ( ( model, cmds1, zs1 ), cmds2, zs2 ) =
-    ( model, cmds1 ++ cmds2, zs1 ++ zs2 )
+join ( ( model, cmds1, xtra1 ), cmds2, xtra2 ) =
+    ( model, cmds1 ++ cmds2, xtra1 ++ xtra2 )
 
 
 {-| Sequential composition of updates. This function is especially useful in combination
@@ -217,8 +217,8 @@ addCmd cmd model =
 {-| Map over the `Cmd` contained in the provided `Update`.
 -}
 mapCmd : (x -> y) -> Update a x o -> Update a y o
-mapCmd f ( model, cmds, zs ) =
-    ( model, List.map (Cmd.map f) cmds, zs )
+mapCmd f ( model, cmds, xtra ) =
+    ( model, List.map (Cmd.map f) cmds, xtra )
 
 
 {-| Shortcut for `andThen << addCmd`
