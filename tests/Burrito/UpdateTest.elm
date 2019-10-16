@@ -12,7 +12,7 @@ testSave =
         state =
             5
 
-        ( a, b ) =
+        ( a, b, _ ) =
             save state
     in
     describe "save"
@@ -29,7 +29,7 @@ testMap =
         state =
             5
 
-        ( a, b ) =
+        ( a, b, _ ) =
             map (\x -> x + 1) (save state)
     in
     describe "map"
@@ -41,7 +41,7 @@ testMap =
 testJoin : Test
 testJoin =
     let
-        ( a, _ ) =
+        ( a, _, _ ) =
             join (save (save 5))
     in
     describe "join"
@@ -59,7 +59,7 @@ testMap2 =
         b =
             save 8
 
-        ( c, _ ) =
+        ( c, _, _ ) =
             map2 (\x y -> x + y) a b
     in
     describe "map2"
@@ -80,7 +80,7 @@ testMap3 =
         c =
             save 2
 
-        ( d, _ ) =
+        ( d, _, _ ) =
             map3 (\x y z -> x + (y - z)) a b c
     in
     describe "map3"
@@ -104,7 +104,7 @@ testAndMap =
         c =
             save 7
 
-        ( d, _ ) =
+        ( d, _, _ ) =
             map f a
                 |> andMap b
                 |> andMap c
@@ -121,7 +121,7 @@ testAddCmd =
         myCmd1 =
             Cmd.map (always 1) Cmd.none
 
-        ( _, cmds1 ) =
+        ( _, cmds1, _ ) =
             save 5
                 |> addCmd myCmd1
     in

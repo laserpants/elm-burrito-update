@@ -1,5 +1,5 @@
 module Burrito.Update exposing
-    ( Update, save, addCmd, map, mapCmd, join, kleisli
+    ( Update, UpdateT, save, addCmd, map, mapCmd, join, kleisli
     , andThen, sequence
     , andMap, ap, map2, map3, map4, map5, map6, map7
     , run, run2, run3
@@ -38,10 +38,13 @@ These functions address the need to map over functions of more than one argument
 -}
 
 
-{-| A type alias wrapper for Elm's `( model, Cmd msg )` tuple.
+type alias UpdateT a m z =
+    ( a, List (Cmd m), List z )
+
+
+{-| A type wrapper for Elm's `( model, Cmd msg )` tuple.
 -}
-type alias Update a m =
-    ( a, List (Cmd m) )
+type alias Update a m = UpdateT a m ()
 
 
 {-| Lifts a value into the `Update` context. For example,
@@ -51,65 +54,65 @@ type alias Update a m =
 corresponds to `( model, Cmd.none )` in code that doesn't use this library.
 
 -}
-save : a -> Update a m
+save : a -> UpdateT a m z
 save model =
-    ( model, [] )
+    ( model, [], [] )
 
 
 {-| See [`andMap`](#andMap). This function is the same but with the arguments interchanged.
 -}
-ap : Update (a -> b) m -> Update a m -> Update b m
-ap ( f, cmds1 ) ( model, cmds2 ) =
-    ( f model, cmds1 ++ cmds2 )
+ap : UpdateT (a -> b) m z -> UpdateT a m z -> UpdateT b m z
+ap ( f, cmds1, zs1 ) ( model, cmds2, zs2 ) =
+    ( f model, cmds1 ++ cmds2, zs1 ++ zs2 )
 
 
 {-| Apply a function to the state portion of a value.
 -}
-map : (a -> b) -> Update a m -> Update b m
-map f ( model, cmds ) =
-    ( f model, cmds )
+map : (a -> b) -> UpdateT a m z -> UpdateT b m z
+map f ( model, cmds, zs ) =
+    ( f model, cmds, zs )
 
 
 {-| Apply a function of two arguments to the state portion of a value.
 Equivalently, we can think of this as taking a function `a -> b -> c` and
-transforming it into a “lifted” function of type `Update a m -> Update b m -> Update c m`.
+transforming it into a “lifted” function of type `UpdateT a m -> UpdateT b m -> UpdateT c m`.
 -}
-map2 : (p -> q -> r) -> Update p m -> Update q m -> Update r m
+map2 : (p -> q -> r) -> UpdateT p m z -> UpdateT q m z -> UpdateT r m z
 map2 f =
     ap << map f
 
 
 {-| Apply a function of three arguments to the state portion of a value.
 -}
-map3 : (p -> q -> r -> s) -> Update p m -> Update q m -> Update r m -> Update s m
+map3 : (p -> q -> r -> s) -> UpdateT p m z -> UpdateT q m z -> UpdateT r m z -> UpdateT s m z
 map3 f a =
     ap << map2 f a
 
 
 {-| Apply a function of four arguments to the state portion of a value.
 -}
-map4 : (p -> q -> r -> s -> t) -> Update p m -> Update q m -> Update r m -> Update s m -> Update t m
+map4 : (p -> q -> r -> s -> t) -> UpdateT p m z -> UpdateT q m z -> UpdateT r m z -> UpdateT s m z -> UpdateT t m z
 map4 f a b =
     ap << map3 f a b
 
 
 {-| Apply a function of five arguments to the state portion of a value.
 -}
-map5 : (p -> q -> r -> s -> t -> u) -> Update p m -> Update q m -> Update r m -> Update s m -> Update t m -> Update u m
+map5 : (p -> q -> r -> s -> t -> u) -> UpdateT p m z -> UpdateT q m z -> UpdateT r m z -> UpdateT s m z -> UpdateT t m z -> UpdateT u m z
 map5 f a b c =
     ap << map4 f a b c
 
 
 {-| Apply a function of six arguments to the state portion of a value.
 -}
-map6 : (p -> q -> r -> s -> t -> u -> v) -> Update p m -> Update q m -> Update r m -> Update s m -> Update t m -> Update u m -> Update v m
+map6 : (p -> q -> r -> s -> t -> u -> v) -> UpdateT p m z -> UpdateT q m z -> UpdateT r m z -> UpdateT s m z -> UpdateT t m z -> UpdateT u m z -> UpdateT v m z
 map6 f a b c d =
     ap << map5 f a b c d
 
 
 {-| Apply a function of seven arguments to the state portion of a value.
 -}
-map7 : (p -> q -> r -> s -> t -> u -> v -> w) -> Update p m -> Update q m -> Update r m -> Update s m -> Update t m -> Update u m -> Update v m -> Update w m
+map7 : (p -> q -> r -> s -> t -> u -> v -> w) -> UpdateT p m z -> UpdateT q m z -> UpdateT r m z -> UpdateT s m z -> UpdateT t m z -> UpdateT u m z -> UpdateT v m z -> UpdateT w m z
 map7 f a b c d e =
     ap << map6 f a b c d e
 
@@ -118,7 +121,7 @@ map7 f a b c d e =
 
     map (+) (save 4)
 
-we end up with a result of type `Update (number -> number) c e`. To apply the function inside this value to another `Update number c e` value, we can write&hellip;
+we end up with a result of type `Update (number -> number) c`. To apply the function inside this value to another `Update number c` value, we can write&hellip;
 
     map (+) (save 4) |> andMap (save 5)
 
@@ -142,7 +145,7 @@ If not sooner, you'll need this when you want to `mapN` and N > 7.
 See also [`map2`](#map2), [`map3`](#map3), etc.
 
 -}
-andMap : Update a m -> Update (a -> b) m -> Update b m
+andMap : UpdateT a m z -> UpdateT (a -> b) m z -> UpdateT b m z
 andMap a b =
     ap b a
 
@@ -150,9 +153,9 @@ andMap a b =
 {-| Remove one level of monadic structure. It may suffice to know that some other
 functions in this library are implemented in terms of `join`. In particular, `andThen f = join << map f`
 -}
-join : Update (Update a m) m -> Update a m
-join ( ( model, cmds1 ), cmds2 ) =
-    ( model, cmds1 ++ cmds2 )
+join : UpdateT (UpdateT a m z) m z -> UpdateT a m z
+join ( ( model, cmds1, zs1 ), cmds2, zs2 ) =
+    ( model, cmds1 ++ cmds2, zs1 ++ zs2 )
 
 
 {-| Sequential composition of updates. This function is especially useful in combination
@@ -169,7 +172,7 @@ updates, we compose functions of the form `something -> State -> Update State m`
 _Aside:_ `andThen` is like the monadic bind `(>>=)` operator in Haskell, but with the arguments interchanged.
 
 -}
-andThen : (b -> Update a m) -> Update b m -> Update a m
+andThen : (b -> UpdateT a m z) -> UpdateT b m z -> UpdateT a m z
 andThen fun =
     join << map fun
 
@@ -177,14 +180,14 @@ andThen fun =
 {-| Right-to-left (Kleisli) composition of two functions that return `Update` values,
 passing the state part of the first return value to the second function.
 -}
-kleisli : (b -> Update d m) -> (a -> Update b m) -> a -> Update d m
+kleisli : (b -> UpdateT d m z) -> (a -> UpdateT b m z) -> a -> UpdateT d m z
 kleisli f g =
     andThen f << g
 
 
 {-| Take a list of `a -> Update a m`s and run them sequentially, in a left-to-right manner.
 -}
-sequence : List (a -> Update a m) -> a -> Update a m
+sequence : List (a -> UpdateT a m z) -> a -> UpdateT a m z
 sequence list model =
     List.foldl andThen (save model) list
 
@@ -203,46 +206,46 @@ In this example, `andThen (addCmd someOtherCommand)` can also be shortened to
 [`andAddCmd`](#andAddCmd)`someOtherCommand`.
 
 -}
-addCmd : Cmd m -> a -> Update a m
+addCmd : Cmd m -> a -> UpdateT a m z
 addCmd cmd model =
-    ( model, [ cmd ] )
+    ( model, [ cmd ], [] )
 
 
 {-| Map over the `Cmd` contained in the provided `Update`.
 -}
-mapCmd : (ma -> mb) -> Update a ma -> Update a mb
-mapCmd f ( model, cmds ) =
-    ( model, List.map (Cmd.map f) cmds )
+mapCmd : (m -> n) -> UpdateT a m z -> UpdateT a n z
+mapCmd f ( model, cmds, zs ) =
+    ( model, List.map (Cmd.map f) cmds, zs )
 
 
 {-| Shortcut for `andThen << addCmd`
 -}
-andAddCmd : Cmd m -> Update a m -> Update a m
+andAddCmd : Cmd m -> UpdateT a m z -> UpdateT a m z
 andAddCmd =
     andThen << addCmd
 
 
-exec : Update a m -> ( a, Cmd m )
-exec ( model, cmds ) =
+exec : UpdateT a m z -> ( a, Cmd m )
+exec ( model, cmds, _ ) =
     ( model, Cmd.batch cmds )
 
 
 {-| Translate a function that returns an `Update` into one that returns a plain `( model, cmd )` pair.
 -}
-run : (p -> Update a m) -> p -> ( a, Cmd m )
+run : (p -> UpdateT a m z) -> p -> ( a, Cmd m )
 run f =
     exec << f
 
 
 {-| Same as [`run`](#run), but for functions of two arguments.
 -}
-run2 : (p -> q -> Update a m) -> p -> q -> ( a, Cmd m )
+run2 : (p -> q -> UpdateT a m z) -> p -> q -> ( a, Cmd m )
 run2 f a =
     exec << f a
 
 
 {-| Same as [`run`](#run), but for functions of three arguments.
 -}
-run3 : (p -> q -> r -> Update a m) -> p -> q -> r -> ( a, Cmd m )
+run3 : (p -> q -> r -> UpdateT a m z) -> p -> q -> r -> ( a, Cmd m )
 run3 f a b =
     exec << f a b
