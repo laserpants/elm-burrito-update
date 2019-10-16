@@ -252,7 +252,6 @@ with get f model =
     f (get model) model
 
 
-
 exec : UpdateT a m z -> ( a, Cmd m )
 exec ( model, cmds, _ ) =
     ( model, Cmd.batch cmds )

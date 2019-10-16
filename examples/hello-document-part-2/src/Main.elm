@@ -38,8 +38,9 @@ update : Msg -> Model -> Update Model Msg
 update msg model =
     case msg of
         ButtonClicked ->
-            let 
-                clickMsg count = "The button has been clicked " ++ String.fromInt count ++ " times."
+            let
+                clickMsg count =
+                    "The button has been clicked " ++ String.fromInt count ++ " times."
             in
             model
                 |> incrementCounter
