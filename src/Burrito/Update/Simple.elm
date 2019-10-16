@@ -1,4 +1,4 @@
-module Burrito.Simple.Update exposing (..)
+module Burrito.Update.Simple exposing (..)
 
 import Burrito.Update
 

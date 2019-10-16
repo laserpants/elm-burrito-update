@@ -2,9 +2,9 @@ module Main exposing (main)
 
 import Browser exposing (Document, UrlRequest)
 import Browser.Navigation as Navigation
-import Burrito.Simple.Update exposing (Update)
 import Burrito.Update exposing (andMap, andThen, save, with)
 import Burrito.Update.Browser exposing (application)
+import Burrito.Update.Simple exposing (Update)
 import Html exposing (..)
 import Html.Events exposing (..)
 import Url exposing (Url)

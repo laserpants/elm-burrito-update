@@ -6,7 +6,8 @@
     "version": "0.0.2",
     "exposed-modules": [
         "Burrito.Update",
-        "Burrito.Update.Browser"
+        "Burrito.Update.Browser",
+        "Burrito.Update.Simple"
     ],
     "source-directories": [
         "src"
