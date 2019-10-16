@@ -1,4 +1,4 @@
-module UpdateTest exposing (..)
+module Burrito.UpdateTest exposing (..)
 
 import Burrito.Update exposing (..)
 import Expect exposing (Expectation)
