@@ -6,7 +6,6 @@ module Burrito.Update.Browser exposing (application, document)
 
 -}
 
-
 import Browser exposing (Document, UrlRequest)
 import Browser.Navigation as Navigation
 import Burrito.Update exposing (Update, run, run2, run3)
