@@ -1,10 +1,9 @@
 module Burrito.Update exposing
-   ( Update, save, addCmd, map, mapCmd, join, kleisli
-    , andThen
+    ( Update, save, addCmd, map, mapCmd, join, kleisli
+    , andThen, sequence
     , andMap, ap, map2, map3, map4, map5, map6, map7
     , run, run2, run3
     , andAddCmd
-    , sequence
     )
 
 {-| Monadic-style interface for state updates.

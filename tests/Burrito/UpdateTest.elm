@@ -1,4 +1,4 @@
-module UpdateTest exposing (suite, testAddCmd, testAndMap, testJoin, testMap, testMap2, testMap3, testSave)
+module UpdateTest exposing (..)
 
 import Burrito.Update exposing (..)
 import Expect exposing (Expectation)
@@ -16,9 +16,9 @@ testSave =
             save state
     in
     describe "save"
-        [ test "state" <|
+        [ test "expect 5 to appear in tuple" <|
             \_ -> Expect.equal a state
-        , test "cmds" <|
+        , test "expect no cmds" <|
             \_ -> Expect.equal [] b
         ]
 
@@ -33,7 +33,7 @@ testMap =
             map (\x -> x + 1) (save state)
     in
     describe "map"
-        [ test "increment" <|
+        [ test "expect value in tuple to increment by 1" <|
             \_ -> Expect.equal a (state + 1)
         ]
 
@@ -41,11 +41,11 @@ testMap =
 testJoin : Test
 testJoin =
     let
-        ( a, b ) =
+        ( a, _ ) =
             join (save (save 5))
     in
     describe "join"
-        [ test "this" <|
+        [ test "expect 5 to appear in tuple" <|
             \_ -> Expect.equal a 5
         ]
 
@@ -63,7 +63,7 @@ testMap2 =
             map2 (\x y -> x + y) a b
     in
     describe "map2"
-        [ test "this" <|
+        [ test "expect sum to appear in first component" <|
             \_ -> Expect.equal c 13
         ]
 
@@ -84,7 +84,7 @@ testMap3 =
             map3 (\x y z -> x + (y - z)) a b c
     in
     describe "map3"
-        [ test "this" <|
+        [ test "expect sum to appear in first component" <|
             \_ -> Expect.equal d 11
         ]
 
@@ -110,7 +110,7 @@ testAndMap =
                 |> andMap c
     in
     describe "andMap"
-        [ test "this" <|
+        [ test "expect sum to appear in first component" <|
             \_ -> Expect.equal d 18
         ]
 
@@ -121,15 +121,12 @@ testAddCmd =
         myCmd1 =
             Cmd.map (always 1) Cmd.none
 
-        myCmd2 =
-            Cmd.map (always 2) Cmd.none
-
         ( _, cmds1 ) =
             save 5
                 |> addCmd myCmd1
     in
     describe "addCmd"
-        [ test "one" <|
+        [ test "expect appear cmd to appear in list" <|
             \_ -> Expect.equal cmds1 [ myCmd1 ]
         ]
 
@@ -139,8 +136,8 @@ testSequence =
 
     let 
         cmds1 =
-          [ \_ -> save 1
-          , \_ -> save 3
+          [ always (save 1)
+          , always (save 3)
           ]
 
         cmds2 =
@@ -153,9 +150,9 @@ testSequence =
 
     in
     describe "sequence"
-        [ test "this" <|
+        [ test "expect the value to be 3" <|
             \_ -> Expect.equal d (save 3)
-        , test "that" <|
+        , test "expect the result of 8/2+1 to be 5" <|
             \_ -> Expect.equal e (save 5)
         ]
 
