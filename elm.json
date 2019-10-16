@@ -5,7 +5,8 @@
     "license": "BSD-3-Clause",
     "version": "0.0.1",
     "exposed-modules": [
-        "Burrito.Update"
+        "Burrito.Update",
+        "Burrito.Update.Browser"
     ],
     "source-directories": [
         "src"
