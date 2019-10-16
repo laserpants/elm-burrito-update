@@ -1,11 +1,3 @@
-# Elm Burrito Update
-
-[![Build Status](https://img.shields.io/travis/laserpants/elm-burrito-update/master.svg?style=flat)](https://travis-ci.org/laserpants/elm-burrito-update)
-[![Version](https://img.shields.io/badge/elm--version-0.19-blue.svg?colorB=ff69b4)](http://elm-lang.org/)
-
-## Getting started
-
-```elm
 module Main exposing (main)
 
 import Browser exposing (Document)
@@ -46,7 +38,7 @@ update : Msg -> Model -> Update Model Msg
 update msg model =
     case msg of
         ButtonClicked ->
-            let
+            let 
                 clickMsg count = "The button has been clicked " ++ String.fromInt count ++ " times."
             in
             model
@@ -76,12 +68,3 @@ main =
         , subscriptions = always Sub.none
         , view = view
         }
-```
-
-## Documentation
-
-TODO
-
-## Etymology
-
-TODO
