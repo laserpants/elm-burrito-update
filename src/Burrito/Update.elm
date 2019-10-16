@@ -1,5 +1,5 @@
 module Burrito.Update exposing
-    ( Update, save, addCmd, map, mapCmd, join, kleisli
+   ( Update, save, addCmd, map, mapCmd, join, kleisli
     , andThen
     , andMap, ap, map2, map3, map4, map5, map6, map7
     , run, run2, run3
@@ -17,7 +17,7 @@ module Burrito.Update exposing
 
 ## Chaining Updates
 
-@docs andThen
+@docs andThen, sequence
 
 
 ## Applicative Interface
@@ -183,6 +183,8 @@ kleisli f g =
     andThen f << g
 
 
+{-| TODO
+-}
 sequence : List (a -> Update a m) -> a -> Update a m
 sequence list model =
     List.foldr andThen (save model) list
@@ -226,16 +228,22 @@ exec ( model, cmds ) =
     ( model, Cmd.batch cmds )
 
 
+{-| TODO
+-}
 run : (p -> Update a m) -> p -> ( a, Cmd m )
 run f =
     exec << f
 
 
+{-| TODO
+-}
 run2 : (p -> q -> Update a m) -> p -> q -> ( a, Cmd m )
 run2 f a =
     exec << f a
 
 
+{-| TODO
+-}
 run3 : (p -> q -> r -> Update a m) -> p -> q -> r -> ( a, Cmd m )
 run3 f a b =
     exec << f a b

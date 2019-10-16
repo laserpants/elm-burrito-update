@@ -136,7 +136,7 @@ testAddCmd =
 
 suite : Test
 suite =
-    describe "Magic Update"
+    describe "Burrito Update"
         [ testSave
         , testMap
         , testJoin
