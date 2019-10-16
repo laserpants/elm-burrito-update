@@ -183,7 +183,7 @@ kleisli f g =
     andThen f << g
 
 
-{-| Run a sequence of `Update`s.
+{-| Take a list of `a -> Update a m`s and run them sequentially, in a left-to-right manner.
 -}
 sequence : List (a -> Update a m) -> a -> Update a m
 sequence list model =
