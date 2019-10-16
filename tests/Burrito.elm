@@ -1,9 +1,9 @@
 module Burrito exposing (suite, testAddCmd, testAndMap, testJoin, testMap, testMap2, testMap3, testSave)
 
+import Burrito.Update exposing (..)
 import Expect exposing (Expectation)
 import Fuzz exposing (Fuzzer, int, list, string)
 import Test exposing (..)
-import Burrito.Update exposing (..)
 
 
 testSave : Test
