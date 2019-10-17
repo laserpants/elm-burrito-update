@@ -5,10 +5,10 @@
     "license": "BSD-3-Clause",
     "version": "0.1.0",
     "exposed-modules": [
+        "Burrito.Callback",
         "Burrito.Update",
         "Burrito.Update.Browser",
-        "Burrito.Update.Simple",
-        "Burrito.Wrap"
+        "Burrito.Update.Simple"
     ],
     "source-directories": [
         "src"

@@ -1,9 +1,9 @@
 module Main exposing (..)
 
 import Browser exposing (Document)
+import Burrito.Callback exposing (..)
 import Burrito.Update exposing (..)
 import Burrito.Update.Browser exposing (document)
-import Burrito.Wrap exposing (..)
 import Html exposing (..)
 import Html.Events exposing (..)
 
@@ -96,7 +96,7 @@ update msg state =
                 |> buttonUpdate { buttonClicked = handleButtonClicked } buttonMsg
                 |> mapCmd ButtonMsg
                 |> andThen (setButton state)
-                |> unwrap
+                |> runCallbacks
 
 
 view : State -> Document Msg
