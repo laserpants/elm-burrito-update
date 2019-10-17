@@ -8,6 +8,8 @@ module Burrito.Update exposing
 
 {-| Monadic-style interface for state updates.
 
+In standard use, you will not need the third type parameter of `Update`. See [`Burrito.Update.Simple`](Burrito.Update.Simple#Update) in that case.
+
 
 # Update
 
@@ -38,8 +40,7 @@ These functions address the need to map over functions of more than one argument
 -}
 
 
-{-| Type wrapper for Elm's `( model, Cmd msg )` tuple. In standard use, client code
-will not require the third type parameter and [`Burrito.Update.Simple`](Burrito.Update.Simple#Update) can be used.
+{-| Type wrapper for Elm's `( model, Cmd msg )` tuple.
 -}
 type alias Update a msg t =
     ( a, List (Cmd msg), List t )
@@ -73,7 +74,7 @@ map f ( model, cmds, extra ) =
 
 {-| Apply a function of two arguments to the state portion of a value.
 Equivalently, we can think of this as taking a function `a -> b -> c` and
-transforming it into a “lifted” function of type `Update a m -> Update b m -> Update c m`.
+transforming it into a “lifted” function of type `Update a msg t -> Update b msg t -> Update c msg t`.
 -}
 map2 : (p -> q -> r) -> Update p msg t1 -> Update q msg t1 -> Update r msg t1
 map2 f =
@@ -119,7 +120,7 @@ map7 f a b c d e =
 
     map (+) (save 4)
 
-we end up with a result of type `Update (number -> number) c`. To apply the function inside this value to another `Update number c` value, we can write&hellip;
+we end up with a result of type `Update (number -> number) msg t`. To apply the function inside this value to another `Update number msg t` value, we can write&hellip;
 
     map (+) (save 4) |> andMap (save 5)
 
@@ -158,9 +159,9 @@ join ( ( model, cmds1, extra1 ), cmds2, extra2 ) =
 
 {-| Sequential composition of updates. This function is especially useful in combination
 with the forward pipe operator (`|>`), for writing code in the style of pipelines. To chain
-updates, we compose functions of the form `something -> State -> Update State m`:
+updates, we compose functions of the form `something -> State -> Update State msg t`:
 
-    say : String -> State -> Update State m
+    say : String -> State -> Update State msg t
     say what state = ...
 
     save state
@@ -183,7 +184,7 @@ kleisli f g =
     andThen f << g
 
 
-{-| Take a list of `a -> Update a m` values and run them sequentially, in a left-to-right manner.
+{-| Take a list of `a -> Update a msg t` values and run them sequentially, in a left-to-right manner.
 -}
 sequence : List (a -> Update a msg t) -> a -> Update a msg t
 sequence list model =
