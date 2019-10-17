@@ -22,7 +22,7 @@ runCallbacks : Update a msg (a -> Update a msg t) -> Update a msg t1
 runCallbacks ( model1, cmds1, calls ) =
     let
         ( model2, cmds2, _ ) =
-            sequence calls model1
+            sequence (List.reverse calls) model1
     in
     ( model2, cmds1 ++ cmds2, [] )
 
