@@ -1,6 +1,6 @@
 {
     "type": "package",
-    "name": "laserpants/burrito-update",
+    "name": "laserpants/elm-burrito-update",
     "summary": "Monadic-style interface for state updates in Elm.",
     "license": "BSD-3-Clause",
     "version": "1.0.0",
