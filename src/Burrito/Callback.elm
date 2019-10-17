@@ -1,6 +1,7 @@
 module Burrito.Callback exposing (apply, runCallbacks, andApply)
 
 {-| Callbacks to allow for information to be passed _up_ in the update tree.
+See the `hello-button` example for basic use.
 
 @docs apply, runCallbacks, andApply
 
@@ -9,8 +10,7 @@ module Burrito.Callback exposing (apply, runCallbacks, andApply)
 import Burrito.Update exposing (..)
 
 
-{-| Append a callback to the list of functions that are applied to the returned value.
-See the `examples/hello-button` example for basic use.
+{-| Append a callback to the list of functions that subsequently get applied to the returned value using `runCallbacks`.
 -}
 apply : t -> a -> Update a msg t
 apply call model =
