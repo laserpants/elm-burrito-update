@@ -3,7 +3,7 @@
     "name": "laserpants/burrito-update",
     "summary": "Monadic-style interface for state updates in Elm.",
     "license": "BSD-3-Clause",
-    "version": "0.2.0",
+    "version": "1.0.0",
     "exposed-modules": [
         "Burrito.Callback",
         "Burrito.Update",
