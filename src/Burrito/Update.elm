@@ -38,7 +38,8 @@ These functions address the need to map over functions of more than one argument
 -}
 
 
-{-| Type wrapper for Elm's `( model, Cmd msg )` tuple.
+{-| Type wrapper for Elm's `( model, Cmd msg )` tuple. In standard use, client code
+will not require the third type parameter and [`Burrito.Update.Simple`](Burrito.Update.Simple#Update) can be used.
 -}
 type alias Update a msg t =
     ( a, List (Cmd msg), List t )
@@ -56,7 +57,7 @@ save model =
     ( model, [], [] )
 
 
-{-| See [`andMap`](#andMap). This function is the same but with the arguments interchanged.
+{-| This function is like [`andMap`](#andMap), but with the arguments interchanged.
 -}
 ap : Update (a -> b) msg t -> Update a msg t -> Update b msg t
 ap ( f, cmds1, extra1 ) ( model, cmds2, extra2 ) =
@@ -74,14 +75,14 @@ map f ( model, cmds, extra ) =
 Equivalently, we can think of this as taking a function `a -> b -> c` and
 transforming it into a “lifted” function of type `Update a m -> Update b m -> Update c m`.
 -}
-map2 : (p -> q -> r) -> Update p msg t -> Update q msg t -> Update r msg t
+map2 : (p -> q -> r) -> Update p msg t1 -> Update q msg t1 -> Update r msg t1
 map2 f =
     ap << map f
 
 
 {-| Apply a function of three arguments to the state portion of a value.
 -}
-map3 : (p -> q -> r -> s) -> Update p msg t -> Update q msg t -> Update r msg t -> Update s msg t
+map3 : (p -> q -> r -> s) -> Update p msg t1 -> Update q msg t1 -> Update r msg t1 -> Update s msg t1
 map3 f a =
     ap << map2 f a
 

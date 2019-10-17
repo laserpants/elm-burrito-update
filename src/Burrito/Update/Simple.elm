@@ -1,9 +1,16 @@
-module Burrito.Update.Simple exposing (..)
+module Burrito.Update.Simple exposing (Update)
+
+{-| A simpler version of `Update` which is sufficient in most cases.
+
+
+@docs Update
+
+-}
 
 import Burrito.Update
 
 
-{-| A simpler version of `Burrito.Update.Update` which is sufficient in most cases.
+{-| See [`Burrito.Update.Update`](Burrito.Update#Update). 
 -}
 type alias Update a msg =
     Burrito.Update.Update a msg ()

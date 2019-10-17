@@ -9,10 +9,15 @@
 module Main exposing (main)
 
 import Browser exposing (Document)
-import Burrito.Update exposing (..)
+import Burrito.Update exposing (andMap, andThen, save, with)
 import Burrito.Update.Browser exposing (document)
+import Burrito.Update.Simple exposing (Update)
 import Html exposing (..)
 import Html.Events exposing (..)
+
+
+type alias Flags =
+    ()
 
 
 type Msg
@@ -25,29 +30,30 @@ type alias Model =
     }
 
 
-setMessage : String -> Model -> PlainUpdate Model msg
+setMessage : String -> Model -> Update Model msg
 setMessage message model =
     save { model | message = message }
 
 
-incrementCounter : Model -> PlainUpdate Model msg
+incrementCounter : Model -> Update Model msg
 incrementCounter model =
     save { model | count = model.count + 1 }
 
 
-init : () -> PlainUpdate Model Msg
+init : Flags -> Update Model Msg
 init () =
     save Model
         |> andMap (save "Nothing much going on here.")
         |> andMap (save 0)
 
 
-update : Msg -> Model -> PlainUpdate Model Msg
+update : Msg -> Model -> Update Model Msg
 update msg model =
     case msg of
         ButtonClicked ->
             let
-                clickMsg count = "The button has been clicked " ++ String.fromInt count ++ " times."
+                clickMsg count =
+                    "The button has been clicked " ++ String.fromInt count ++ " times."
             in
             model
                 |> incrementCounter
@@ -68,7 +74,7 @@ view { message } =
     }
 
 
-main : Program () Model Msg
+main : Program Flags Model Msg
 main =
     document
         { init = init
@@ -78,10 +84,8 @@ main =
         }
 ```
 
-## Documentation
-
-TODO
-
 ## Etymology
 
-TODO
+Burritos have appeared in some programming tutorials, serving as an analogy for monads.
+Whether or not this is a good pedagogical idea, they do seem to [satisfy the monad laws](https://blog.plover.com/prog/burritos.html).
+For an in-depth treatment of the subject, see [this excellent paper](http://emorehouse.web.wesleyan.edu/silliness/burrito_monads.pdf) by Ed Morehouse.
