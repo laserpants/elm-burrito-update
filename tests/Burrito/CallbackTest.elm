@@ -8,9 +8,8 @@ import Test exposing (..)
 
 
 testCallbacks : Test
-testCallbacks = 
+testCallbacks =
     let
-
         fun1 { multiplyBy, incrementBy } msg state =
             save 5
                 |> andApply (multiplyBy 2)
@@ -19,7 +18,6 @@ testCallbacks =
         fun2 =
             fun1 { multiplyBy = \a s -> save (s * a), incrementBy = \a s -> save (s + a) } 0 0
                 |> runCallbacks
-
     in
     describe "andApply"
         [ test "expect the value to be 13" <|
