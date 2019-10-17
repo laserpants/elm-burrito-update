@@ -3,7 +3,28 @@
 [![Build Status](https://img.shields.io/travis/laserpants/elm-burrito-update/master.svg?style=flat)](https://travis-ci.org/laserpants/elm-burrito-update)
 [![Version](https://img.shields.io/badge/elm--version-0.19-blue.svg?colorB=ff69b4)](http://elm-lang.org/)
 
+In a nutshell, this library let's you do the following:
+
+1) Chain updates conveniently using the pipes operator:
+
+```elm
+ model
+     |> setResource Requested
+     |> andAddCmd (model.request url maybeBody)
+     |> mapCmd toMsg
+```
+
+2) Allow for information to be passed *up* in the update tree:
+
+```elm
+ model
+     |> setResource (Available resource)
+     |> andApply (onSuccess resource) -- pass the message
+```
+
 ## Getting started
+
+See `examples/hello-world`.
 
 ```elm
 module Main exposing (main)

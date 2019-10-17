@@ -1,15 +1,15 @@
-module Burrito.Callback exposing (apply, runCallbacks)
+module Burrito.Callback exposing (apply, runCallbacks, andApply)
 
-{-| Callbacks to allow for information to be passed *up* in the update tree.
+{-| Callbacks to allow for information to be passed _up_ in the update tree.
 
-@docs apply, runCallbacks
+@docs apply, runCallbacks, andApply
 
 -}
 
 import Burrito.Update exposing (..)
 
 
-{-| Append a partially applied callback to the list of functions which will be applied to the returned value.
+{-| Append a partially applied callback to the list of functions which subsequently will be applied to the returned value.
 -}
 apply : t -> a -> Update a msg t
 apply call model =
@@ -25,3 +25,10 @@ runCallbacks ( model1, cmds1, calls ) =
             sequence calls model1
     in
     ( model2, cmds1 ++ cmds2, [] )
+
+
+{-| Shortcut for `andThen << apply`
+-}
+andApply : t -> Update a msg t -> Update a msg t
+andApply =
+    andThen << apply
