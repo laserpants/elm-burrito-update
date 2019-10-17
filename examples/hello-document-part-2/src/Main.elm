@@ -1,9 +1,8 @@
 module Main exposing (main)
 
 import Browser exposing (Document)
-import Burrito.Update exposing (andMap, andThen, save, with)
 import Burrito.Update.Browser exposing (document)
-import Burrito.Update.Simple exposing (Update)
+import Burrito.Update.Simple exposing (..)
 import Html exposing (..)
 import Html.Events exposing (..)
 
