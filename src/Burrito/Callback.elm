@@ -9,7 +9,8 @@ module Burrito.Callback exposing (apply, runCallbacks, andApply)
 import Burrito.Update exposing (..)
 
 
-{-| Append a partially applied callback to the list of functions which subsequently will be applied to the returned value.
+{-| Append a callback to the list of functions that are applied to the returned value.
+See the `examples/hello-button` example for basic use.
 -}
 apply : t -> a -> Update a msg t
 apply call model =
