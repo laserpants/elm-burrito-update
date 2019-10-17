@@ -8,7 +8,7 @@ module Burrito.Update exposing
 
 {-| Monadic-style interface for state updates.
 
-In standard use, you will not need the third type parameter of `Update`. See [`Burrito.Update.Simple`](Burrito.Update.Simple#Update) in that case.
+> In standard use, you will not need the third type parameter of `Update`. See [`Burrito.Update.Simple`](Burrito.Update.Simple#Update) in that case.
 
 
 # Update
