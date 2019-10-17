@@ -7,7 +7,8 @@
     "exposed-modules": [
         "Burrito.Update",
         "Burrito.Update.Browser",
-        "Burrito.Update.Simple"
+        "Burrito.Update.Simple",
+        "Burrito.Wrap"
     ],
     "source-directories": [
         "src"
