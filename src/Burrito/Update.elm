@@ -154,7 +154,7 @@ functions in this library are implemented in terms of `join`. In particular, `an
 -}
 join : Update (Update a msg t) msg t -> Update a msg t
 join ( ( model, cmds1, extra1 ), cmds2, extra2 ) =
-    ( model, cmds1 ++ cmds2, extra1 ++ extra2 )
+    ( model, cmds1 ++ cmds2, extra2 ++ extra1 )
 
 
 {-| Sequential composition of updates. This function is especially useful in combination
