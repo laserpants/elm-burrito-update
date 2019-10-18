@@ -19,7 +19,7 @@ apply call model =
 
 {-| Sequentially compose the list of monadic functions (callbacks) produced by a nested update call.
 -}
-runCallbacks : Update a msg (a -> Update a msg t) -> Update a msg t1
+runCallbacks : Update a msg (a -> Update a msg t) -> Update a msg t
 runCallbacks ( model1, cmds1, calls1 ) =
     let
         ( model2, cmds2, calls2 ) =
