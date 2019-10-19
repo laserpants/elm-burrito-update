@@ -117,7 +117,7 @@ This simple single-page blog-like application shows how to use this library to:
   * Display “toast” notifications; and
   * Work with
     * forms (wrapping [elm-form](https://package.elm-lang.org/packages/etaque/elm-form/latest)) and
-    * WebSockets (see `Register` page).
+    * WebSockets (see [`Register`](https://github.com/laserpants/elm-burrito-update/blob/master/examples/facepalm/src/Page/Register.elm) page).
 
 ## Etymology
 
