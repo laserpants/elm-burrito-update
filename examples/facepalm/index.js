@@ -13,7 +13,7 @@ var app = Elm.Main.init({
   node: document.getElementById('elm-code'),
   flags: {
     session: session || '',
-    basePath: 'laserpants.github.io' == location.hostname ? '/elm-burrito-update/examples/facepalm' : ''
+    basePath: 'laserpants.github.io' == location.hostname ? '/elm-burrito-update/examples/facepalm/dist' : ''
   }
 });
 
