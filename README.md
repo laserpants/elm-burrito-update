@@ -108,7 +108,7 @@ main =
 
 See `examples/facepalm`.
 
-### [Facepalm](https://laserpants.github.io/elm-burrito-update/examples/facepalm/)
+### [Facepalm](https://laserpants.github.io/elm-burrito-update/examples/facepalm/dist/)
 
 This simple single-page blog-like application shows how to use this library to:
   * Fetch remote resources from an API;
