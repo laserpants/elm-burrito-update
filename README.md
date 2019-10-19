@@ -104,6 +104,21 @@ main =
         }
 ```
 
+## Complete application example
+
+See `examples/facepalm`.
+
+### [Facepalm](https://laserpants.github.io/elm-burrito-update/examples/facepalm/)
+
+This simple single-page blog-like application shows how to use this library to:
+  * Fetch remote resources from an API;
+  * Implement URL routing;
+  * Authenticate users and manage sessions using localStorage/sessionStorage (via ports);
+  * Display “toast” notifications; and
+  * Work with
+    * forms (wrapping [elm-form](https://package.elm-lang.org/packages/etaque/elm-form/latest)) and
+    * WebSockets (see `Register` page).
+
 ## Etymology
 
 Burritos have appeared in some programming tutorials, serving as an analogy for monads.
