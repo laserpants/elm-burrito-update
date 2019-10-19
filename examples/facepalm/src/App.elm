@@ -1,6 +1,4 @@
-module App exposing (..)
-
--- Flags, Msg(..), State, init, subscriptions, update, view)
+module App exposing (Flags, Msg(..), State, init, subscriptions, update, view)
 
 import Browser exposing (Document)
 import Browser.Navigation as Navigation
@@ -112,14 +110,14 @@ loadPage setPage state =
     in
     state
         |> inPage (always setPage)
-        --        |> andThenIf (always (not isLoginRoute)) resetRestrictedUrl
-        --        |> andThen (
-        --              if not isLoginRoute
-        --                  then
-        --                      resetRestrictedUrl
-        --                  else
-        --                      save
-        --        )
+        |> andThenIf (always (not isLoginRoute)) resetRestrictedUrl
+        |> andThen
+            (if not isLoginRoute then
+                resetRestrictedUrl
+
+             else
+                save
+            )
         |> andThen (inUi closeBurgerMenu)
 
 
