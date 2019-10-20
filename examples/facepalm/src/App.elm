@@ -110,7 +110,6 @@ loadPage setPage state =
     in
     state
         |> inPage (always setPage)
-        |> andThenIf (always (not isLoginRoute)) resetRestrictedUrl
         |> andThen
             (if not isLoginRoute then
                 resetRestrictedUrl
@@ -228,25 +227,12 @@ handleAuthResponse maybeSession =
     in
     setSession maybeSession
         >> andThen (updateSessionStorage maybeSession)
-        >> andThenIf (always authenticated) returnToRestrictedUrl
         >> andThen
             (if authenticated then
                 returnToRestrictedUrl
 
              else
                 save
-            )
-
-
-andThenIf pred fun upd =
-    map pred upd
-        |> andThen
-            (\cond ->
-                if cond then
-                    join (map fun upd)
-
-                else
-                    upd
             )
 
 
