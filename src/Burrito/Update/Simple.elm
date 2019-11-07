@@ -142,6 +142,13 @@ with =
     Burrito.Update.with
 
 
+{-| See [`Burrito.Update.using`](Burrito.Update#using).
+-}
+using : (a -> a -> b) -> a -> b
+using =
+    Burrito.Update.using
+
+
 {-| See [`Burrito.Update.run`](Burrito.Update#run).
 -}
 run : (p -> Update a msg) -> p -> ( a, Cmd msg )

@@ -3,7 +3,7 @@ module Burrito.Update exposing
     , andThen, sequence
     , andMap, ap, map2, map3, map4, map5, map6, map7
     , run, run2, run3
-    , andAddCmd, with
+    , andAddCmd, using, with
     )
 
 {-| Monadic-style interface for state updates.
@@ -35,7 +35,7 @@ These functions address the need to map over functions of more than one argument
 
 # Helpers
 
-@docs andAddCmd, with
+@docs andAddCmd, using, with
 
 -}
 
@@ -244,8 +244,24 @@ we can write:
 
 -}
 with : (a -> b) -> (b -> a -> c) -> a -> c
-with get f model =
-    f (get model) model
+with get f =
+    using (f << get)
+
+
+{-| Combinator useful for pointfree style. For example;
+
+    nextPage state =
+        goToPage (state.current + 1) state
+
+can be changed to
+
+    nextPage =
+        using (\{ current } -> goToPage (current + 1))
+
+-}
+using : (a -> a -> b) -> a -> b
+using f model =
+    f model model
 
 
 exec : Update a msg t -> ( a, Cmd msg )
