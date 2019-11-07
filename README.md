@@ -121,6 +121,6 @@ This simple single-page blog-like application shows how to use this library to:
 
 ## Etymology
 
-Burritos have appeared in some programming tutorials, serving as an analogy for monads.
+Burritos have appeared in programming tutorials, serving as an analogy for monads.
 Whether or not this is a good pedagogical idea, they do seem to [satisfy the monad laws](https://blog.plover.com/prog/burritos.html).
 For an in-depth treatment of the subject, see [this excellent paper](http://emorehouse.web.wesleyan.edu/silliness/burrito_monads.pdf) by Ed Morehouse.
