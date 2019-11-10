@@ -63,8 +63,8 @@ type alias State =
     }
 
 
-setButton : State -> ButtonState -> Update State Msg a
-setButton state button =
+insertAsButtonIn : State -> ButtonState -> Update State Msg a
+insertAsButtonIn state button =
     save { state | button = button }
 
 
@@ -96,7 +96,7 @@ update msg state =
             state.button
                 |> buttonUpdate { buttonClicked = handleButtonClicked } buttonMsg
                 |> mapCmd ButtonMsg
-                |> andThen (setButton state)
+                |> andThen (insertAsButtonIn state)
                 |> runCallbacks
 
 

@@ -7,10 +7,6 @@ import Html exposing (..)
 import Html.Events exposing (..)
 
 
-type alias Flags =
-    ()
-
-
 type Msg
     = ButtonClicked
 
@@ -31,7 +27,7 @@ incrementCounter model =
     save { model | count = model.count + 1 }
 
 
-init : Flags -> Update Model Msg
+init : () -> Update Model Msg
 init () =
     save Model
         |> andMap (save "Nothing much going on here.")
@@ -65,7 +61,7 @@ view { message } =
     }
 
 
-main : Program Flags Model Msg
+main : Program () Model Msg
 main =
     document
         { init = init
