@@ -3,7 +3,7 @@ module Burrito.Update exposing
     , andThen, sequence
     , andMap, ap, map2, map3, map4, map5, map6, map7
     , run, run2, run3
-    , andAddCmd, using, with
+    , andAddCmd, using, with, andUsing, andWith
     )
 
 {-| Monadic-style interface for state updates.
@@ -35,7 +35,7 @@ These functions address the need to map over functions of more than one argument
 
 # Helpers
 
-@docs andAddCmd, using, with
+@docs andAddCmd, using, with, andWith, andUsing
 
 -}
 
@@ -262,6 +262,18 @@ can be changed to
 using : (a -> a -> b) -> a -> b
 using f model =
     f model model
+
+
+{-| Shortcut for `\fun -> andThen << with fun`
+-}
+andWith : (b -> c) -> (c -> b -> Update a msg t) -> Update b msg t -> Update a msg t
+andWith get = andThen << with get
+
+
+{-| Shortcut for `andThen << using`
+-}
+andUsing : (b -> b -> Update a msg t) -> Update b msg t -> Update a msg t
+andUsing = andThen << using
 
 
 exec : Update a msg t -> ( a, Cmd msg )
