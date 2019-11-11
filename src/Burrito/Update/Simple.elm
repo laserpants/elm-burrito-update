@@ -1,4 +1,4 @@
-module Burrito.Update.Simple exposing (Update, save, addCmd, map, mapCmd, join, kleisli, andThen, sequence, andMap, ap, map2, map3, map4, map5, map6, map7, run, run2, run3, andAddCmd, using, with, andUsing, andWith)
+module Burrito.Update.Simple exposing (Update, save, addCmd, map, mapCmd, join, kleisli, andThen, sequence, andMap, ap, map2, map3, map4, map5, map6, map7, run, run2, run3, andAddCmd, using, with, andWith, andUsing)
 
 {-| This module exposes an API identical to [`Burrito.Update`](Burrito.Update) except a simpler
 version of the `Update` type alias with two type parameters instead of three, which is sufficient in most cases.
