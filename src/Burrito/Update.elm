@@ -179,7 +179,7 @@ andThen fun =
 {-| Right-to-left (Kleisli) composition of two functions that return `Update` values,
 passing the state part of the first return value to the second function.
 -}
-kleisli : (b -> Update d msg t) -> (a -> Update b msg t) -> a -> Update d msg t
+kleisli : (b -> Update c msg t) -> (a -> Update b msg t) -> a -> Update c msg t
 kleisli f g =
     andThen f << g
 
