@@ -88,13 +88,26 @@ initSession { session } =
 
 init : Flags -> Url -> Navigation.Key -> Update State Msg a
 init flags url key =
+    let
+        session =
+            initSession flags
+
+        router = 
+            Router.init fromUrl flags.basePath key RouterMsg
+
+    in
     save State
-        |> andMap (initSession flags |> save)
-        |> andMap (Router.init fromUrl flags.basePath key RouterMsg)
+        |> andMap (save session)
+        |> andMap router
         |> andMap Ui.init
         |> andMap (save Nothing)
         |> andMap (save Page.NotFoundPage)
-        |> andThen (update (RouterMsg (Router.UrlChange url)))
+        |> andThen (notifyUrlChange url)
+
+
+notifyUrlChange : Url -> State -> Update State Msg a
+notifyUrlChange =
+    update << RouterMsg << Router.UrlChange
 
 
 redirect : String -> State -> Update State Msg a
