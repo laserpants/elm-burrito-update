@@ -65,14 +65,14 @@ ap ( f, cmds1, extra1 ) ( model, cmds2, extra2 ) =
     ( f model, cmds1 ++ cmds2, extra1 ++ extra2 )
 
 
-{-| Apply a function to the state portion of a value.
+{-| Apply a function to the state portion of an `Update`.
 -}
 map : (a -> b) -> Update a msg t -> Update b msg t
 map f ( model, cmds, extra ) =
     ( f model, cmds, extra )
 
 
-{-| Apply a function of two arguments to the state portion of a value.
+{-| Combine the state of two `Update`s using a function of two arguments.
 Equivalently, we can think of this as taking a function `a -> b -> c` and
 transforming it into a “lifted” function of type `Update a msg t -> Update b msg t -> Update c msg t`.
 -}
@@ -81,35 +81,35 @@ map2 f =
     ap << map f
 
 
-{-| Apply a function of three arguments to the state portion of a value.
+{-| Combine the state of three `Update`s using a function of three arguments.
 -}
 map3 : (p -> q -> r -> s) -> Update p msg t1 -> Update q msg t1 -> Update r msg t1 -> Update s msg t1
 map3 f a =
     ap << map2 f a
 
 
-{-| Apply a function of four arguments to the state portion of a value.
+{-| Combine the state of four `Update`s using a function of four arguments.
 -}
 map4 : (p -> q -> r -> s -> t) -> Update p msg t1 -> Update q msg t1 -> Update r msg t1 -> Update s msg t1 -> Update t msg t1
 map4 f a b =
     ap << map3 f a b
 
 
-{-| Apply a function of five arguments to the state portion of a value.
+{-| Combine the state of five `Update`s using a function of five arguments.
 -}
 map5 : (p -> q -> r -> s -> t -> u) -> Update p msg t1 -> Update q msg t1 -> Update r msg t1 -> Update s msg t1 -> Update t msg t1 -> Update u msg t1
 map5 f a b c =
     ap << map4 f a b c
 
 
-{-| Apply a function of six arguments to the state portion of a value.
+{-| Combine the state of six `Update`s using a function of six arguments.
 -}
 map6 : (p -> q -> r -> s -> t -> u -> v) -> Update p msg t1 -> Update q msg t1 -> Update r msg t1 -> Update s msg t1 -> Update t msg t1 -> Update u msg t1 -> Update v msg t1
 map6 f a b c d =
     ap << map5 f a b c d
 
 
-{-| Apply a function of seven arguments to the state portion of a value.
+{-| Combine the state of seven `Update`s using a function of seven arguments.
 -}
 map7 : (p -> q -> r -> s -> t -> u -> v -> w) -> Update p msg t1 -> Update q msg t1 -> Update r msg t1 -> Update s msg t1 -> Update t msg t1 -> Update u msg t1 -> Update v msg t1 -> Update w msg t1
 map7 f a b c d e =
