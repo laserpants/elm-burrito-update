@@ -1,6 +1,6 @@
 module Main exposing (main)
 
-import App exposing (..)
+import App exposing (Flags, Msg(..), State, init, subscriptions, update, view)
 import Burrito.Update.Browser exposing (application)
 import Burrito.Update.Router as Router
 

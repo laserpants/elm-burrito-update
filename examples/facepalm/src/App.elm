@@ -92,9 +92,8 @@ init flags url key =
         session =
             initSession flags
 
-        router = 
+        router =
             Router.init fromUrl flags.basePath key RouterMsg
-
     in
     save State
         |> andMap (save session)
