@@ -60,10 +60,9 @@ showToast : Toast -> StateUpdate a
 showToast toast =
     using
         (\{ counter } ->
-            let 
-                dismissToastTask = 
+            let
+                dismissToastTask =
                     always (DismissToast counter)
-
             in
             setToast toast
                 >> andAddCmd (Task.perform dismissToastTask (Process.sleep 4000))
@@ -83,7 +82,7 @@ dismissToast state =
 
 init : Update State msg a
 init =
-    save 
+    save
         { menuIsOpen = False
         , toast = Nothing
         , counter = 1
@@ -124,7 +123,10 @@ toastMessage { toast } toMsg =
                 |> Html.map toMsg
 
 
+
 --navbar : Maybe Session -> { a | isHomePage : Bool, isNewPostPage : Bool, isAboutPage : Bool } -> State -> (Msg -> msg) -> Html msg
+
+
 navbar { menuIsOpen } maybeSession =
     let
         burger =
@@ -157,6 +159,7 @@ navbar { menuIsOpen } maybeSession =
                 [ navbarItemLink True [ href "/" ] [ text "Home" ]
                 , navbarItemLink False [ href "/about" ] [ text "About" ]
                 , navbarItemLink False [ href "/posts/new" ] [ text "New post" ]
+
                 --[ navbarItemLink page.isHomePage [ href "/" ] [ text "Home" ]
                 --, navbarItemLink page.isAboutPage [ href "/about" ] [ text "About" ]
                 --, navbarItemLink page.isNewPostPage [ href "/posts/new" ] [ text "New post" ]
@@ -165,14 +168,17 @@ navbar { menuIsOpen } maybeSession =
                 [ navbarItem False [] [ div [ class "field is-grouped" ] buttons ] ]
             ]
         ]
+
+
+
 --        |> Html.map toMsg
 
 
 spinner : Html msg
 spinner =
-    div 
-        [ class "sk-three-bounce" ] 
+    div
+        [ class "sk-three-bounce" ]
         [ div [ class "sk-child sk-bounce1" ] []
         , div [ class "sk-child sk-bounce2" ] []
-        , div [ class "sk-child sk-bounce3" ] [] 
+        , div [ class "sk-child sk-bounce3" ] []
         ]

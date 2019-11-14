@@ -82,11 +82,11 @@ subscriptions _ =
 
 view : State -> Html Msg
 view { posts } =
-    let 
-        listItem { id, item } = 
-            div 
-                [] 
-                [ text (item.title)
+    let
+        listItem { id, item } =
+            div
+                []
+                [ text item.title
                 ]
     in
     div []
@@ -102,7 +102,7 @@ view { posts } =
 
             -- resourceErrorMessage posts.resource ]
             Available items ->
-                [ Ui.Page.container "Posts" (List.map listItem items) 
+                [ Ui.Page.container "Posts" (List.map listItem items)
                 ]
         )
 

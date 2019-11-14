@@ -3,13 +3,19 @@ module App exposing (Flags, Msg(..), State, init, subscriptions, update, view)
 import Browser exposing (Document)
 import Browser.Navigation as Navigation
 import Bulma.Layout exposing (SectionSpacing(..))
+import Bulma.Modifiers exposing (..)
 import Burrito.Callback exposing (..)
 import Burrito.Router as Router
 import Burrito.Update exposing (..)
 import Data.Session as Session exposing (Session)
 import Html exposing (..)
 import Json.Decode as Json
+import Maybe.Extra as Maybe
 import Page.Home as HomePage
+import Page.Login as LoginPage
+import Page.NewPost as NewPostPage
+import Page.Register as RegisterPage
+import Page.ShowPost as ShowPostPage
 import Route exposing (Route(..), fromUrl)
 import Ui
 import Url exposing (Url)
@@ -17,6 +23,8 @@ import Url exposing (Url)
 
 type PageMsg
     = HomePageMsg HomePage.Msg
+    | NewPostPageMsg NewPostPage.Msg
+    | ShowPostPageMsg ShowPostPage.Msg
 
 
 type Msg
@@ -34,12 +42,15 @@ type alias Flags =
 type Page
     = PageNotFound
     | HomePage HomePage.State
+    | NewPostPage NewPostPage.State
+    | ShowPostPage ShowPostPage.State
 
 
 type alias State =
     { session : Maybe Session
     , router : Router.State Route
     , ui : Ui.State
+    , redirect : Maybe String
     , page : Page
     }
 
@@ -51,6 +62,16 @@ type alias StateUpdate a =
 insertAsRouterIn : State -> Router.State Route -> Update State msg a
 insertAsRouterIn state router =
     save { state | router = router }
+
+
+setRedirect : Url -> StateUpdate a
+setRedirect { path } state =
+    save { state | redirect = Just (String.dropLeft (String.length state.router.basePath) path) }
+
+
+resetRedirect : StateUpdate a
+resetRedirect state =
+    save { state | redirect = Nothing }
 
 
 insertAsUiIn : State -> Ui.State -> Update State msg a
@@ -101,6 +122,10 @@ redirect =
     inRouter << Router.redirect
 
 
+showToast =
+    inUi << Ui.showToast
+
+
 init : Flags -> Url -> Navigation.Key -> Update State Msg a
 init { basePath, session } url key =
     let
@@ -119,6 +144,7 @@ init { basePath, session } url key =
         |> andMap maybeSession
         |> andMap router
         |> andMap ui
+        |> andMap (save Nothing)
         |> andMap (save PageNotFound)
         |> andThen (notifyUrlChange url)
 
@@ -135,32 +161,81 @@ subscriptions _ =
 
 handleRouteChange : Url -> Maybe Route -> StateUpdate a
 handleRouteChange url maybeRoute =
-    case maybeRoute of
-        Nothing ->
-            setPage PageNotFound
+    let
+        ifAuthenticated pageUpdate =
+            using
+                (\{ session } ->
+                    if Nothing == session then
+                        -- Set URL to return to after successful login
+                        setRedirect url
+                            >> andThen (redirect "/login")
+                            >> andThen
+                                (showToast
+                                    { message = "You must be logged in to access that page."
+                                    , color = Warning
+                                    }
+                                )
 
-        Just route ->
-            case route of
-                Login ->
-                    save
+                    else
+                        pageUpdate
+                )
 
-                Logout ->
-                    save
+        unlessAuthenticated pageUpdate =
+            using
+                (\{ session } ->
+                    if Maybe.isJust session then
+                        redirect "/"
 
-                Register ->
-                    save
+                    else
+                        pageUpdate
+                )
 
-                About ->
-                    save
+        changePage =
+            case maybeRoute of
+                Nothing ->
+                    setPage PageNotFound
 
-                NewPost ->
-                    save
+                Just route ->
+                    case route of
+                        -- Redirect if already authenticated
+                        Login ->
+                            unlessAuthenticated
+                                save
 
-                Home ->
-                    inPage HomePageMsg HomePage HomePage.init
+                        Register ->
+                            unlessAuthenticated
+                                save
 
-                ShowPost id ->
-                    save
+                        -- Authenticated only
+                        NewPost ->
+                            ifAuthenticated
+                                (inPage NewPostPageMsg NewPostPage NewPostPage.init)
+
+                        -- Other
+                        About ->
+                            save
+
+                        Home ->
+                            inPage HomePageMsg HomePage HomePage.init
+
+                        ShowPost id ->
+                            inPage ShowPostPageMsg ShowPostPage ShowPostPage.init
+
+                        Logout ->
+                            save
+    in
+    changePage
+        >> andThen
+            (using
+                (\{ router } ->
+                    if Just Login /= router.route then
+                        resetRedirect
+
+                    else
+                        save
+                )
+            )
+        >> andThen (inUi Ui.closeMenu)
 
 
 update : Msg -> StateUpdate a
@@ -177,8 +252,14 @@ update msg =
                 (\{ page } ->
                     case ( pageMsg, page ) of
                         ( HomePageMsg homePageMsg, HomePage homePageState ) ->
-                            inPage HomePageMsg HomePage
+                            inPage HomePageMsg
+                                HomePage
                                 (HomePage.update homePageMsg homePageState)
+
+                        ( NewPostPageMsg newPostPageMsg, NewPostPage newPostPageState ) ->
+                            inPage NewPostPageMsg
+                                NewPostPage
+                                (NewPostPage.update newPostPageMsg newPostPageState)
 
                         _ ->
                             save
@@ -191,6 +272,9 @@ pageView page =
         HomePage homePageState ->
             Html.map HomePageMsg (HomePage.view homePageState)
 
+        NewPostPage newPostPageState ->
+            Html.map NewPostPageMsg (NewPostPage.view newPostPageState)
+
         _ ->
             span [] [ text "not found" ]
 
@@ -199,11 +283,11 @@ view : State -> Document Msg
 view { page, session, ui } =
     { title = ""
     , body =
-        [ Bulma.Layout.section NotSpaced 
-              [] 
-              [ Html.map UiMsg (Ui.navbar ui session)
-              , Html.map PageMsg (pageView page)
-              ]
+        [ Bulma.Layout.section NotSpaced
+            []
+            [ Html.map UiMsg (Ui.navbar ui session)
+            , Html.map PageMsg (pageView page)
+            ]
         ]
     }
 
