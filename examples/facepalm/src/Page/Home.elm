@@ -76,7 +76,7 @@ update msg =
 
 
 subscriptions : State -> Sub Msg
-subscriptions _ =
+subscriptions state =
     Sub.none
 
 

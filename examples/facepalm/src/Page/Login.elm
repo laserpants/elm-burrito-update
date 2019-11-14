@@ -10,6 +10,7 @@ module Page.Login exposing (Msg(..), State, init, subscriptions, update, view)
 --import Helpers.Form exposing (..)
 --import Http
 
+import Bulma.Form exposing (controlCheckBox, controlHelp, controlInput, controlInputModifiers, controlLabel, controlPassword, controlTextArea, controlTextAreaModifiers)
 import Burrito.Api as Api
 import Burrito.Api.Json as JsonApi
 import Burrito.Callback exposing (..)
@@ -26,6 +27,7 @@ type Msg
 
 
 
+--    | FormMsg (Form.Msg Form.Login.Msg)
 --    = NoMsg
 --    = FormMsg Form.Msg
 --    | ApiMsg (Api.Msg Session)
@@ -87,9 +89,35 @@ subscriptions _ =
 
 view : State -> Html Msg
 view state =
+    let
+        disabled =
+            Debug.todo ""
+    in
     div
         []
-        [ text ""
+        [ fieldset [ Html.Attributes.disabled disabled ]
+            [ Bulma.Form.field []
+                [ controlLabel [] [ text "Username" ]
+                ]
+            , Bulma.Form.field []
+                [ controlLabel [] [ text "Password" ]
+                ]
+            , Bulma.Form.field []
+                []
+            , Bulma.Form.field []
+                [ div [ class "control" ]
+                    [ button [ type_ "submit", class "button is-primary" ]
+                        [ text
+                            (if disabled then
+                                "Please wait"
+
+                             else
+                                "Log in"
+                            )
+                        ]
+                    ]
+                ]
+            ]
         ]
 
 
