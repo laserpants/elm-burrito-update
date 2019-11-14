@@ -167,9 +167,35 @@ notifyUrlChange =
     update << RouterMsg << Router.UrlChange
 
 
+pageSubscriptions : Page -> Sub PageMsg
+pageSubscriptions page =
+    case page of
+        PageNotFound ->
+            Sub.none
+
+        HomePage homePageState ->
+            Sub.map HomePageMsg (HomePage.subscriptions homePageState)
+
+        NewPostPage newPostPageState ->
+            Sub.map NewPostPageMsg (NewPostPage.subscriptions newPostPageState)
+
+        ShowPostPage showPostPageState ->
+            Sub.map ShowPostPageMsg (ShowPostPage.subscriptions showPostPageState)
+
+        LoginPage loginPageState ->
+            Sub.map LoginPageMsg (LoginPage.subscriptions loginPageState)
+
+        RegisterPage registerPageState ->
+            Sub.map RegisterPageMsg (RegisterPage.subscriptions registerPageState)
+
+        AboutPage ->
+            Sub.none
+
+
 subscriptions : State -> Sub Msg
-subscriptions _ =
-    Sub.none
+subscriptions { page } =
+    Sub.batch
+        [ Sub.map PageMsg (pageSubscriptions page) ]
 
 
 handleRouteChange : Url -> Maybe Route -> StateUpdate a

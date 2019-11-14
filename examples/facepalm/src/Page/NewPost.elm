@@ -86,7 +86,7 @@ update msg =
 --            inForm (Form.update { onSubmit = handleSubmit } formMsg)
 
 
-subscriptions =
+subscriptions state =
     Sub.none
 
 
