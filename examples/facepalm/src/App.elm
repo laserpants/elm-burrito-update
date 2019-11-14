@@ -17,7 +17,9 @@ import Page.NewPost as NewPostPage
 import Page.Register as RegisterPage
 import Page.ShowPost as ShowPostPage
 import Route exposing (Route(..), fromUrl)
-import Ui
+import Ui exposing (Toast)
+import Ui.Page
+import Ui.Toast
 import Url exposing (Url)
 
 
@@ -25,6 +27,8 @@ type PageMsg
     = HomePageMsg HomePage.Msg
     | NewPostPageMsg NewPostPage.Msg
     | ShowPostPageMsg ShowPostPage.Msg
+    | LoginPageMsg LoginPage.Msg
+    | RegisterPageMsg RegisterPage.Msg
 
 
 type Msg
@@ -44,6 +48,9 @@ type Page
     | HomePage HomePage.State
     | NewPostPage NewPostPage.State
     | ShowPostPage ShowPostPage.State
+    | LoginPage LoginPage.State
+    | RegisterPage RegisterPage.State
+    | AboutPage
 
 
 type alias State =
@@ -57,6 +64,11 @@ type alias State =
 
 type alias StateUpdate a =
     State -> Update State Msg a
+
+
+setSession : Maybe Session -> StateUpdate a
+setSession session state =
+    save { state | session = session }
 
 
 insertAsRouterIn : State -> Router.State Route -> Update State msg a
@@ -122,6 +134,7 @@ redirect =
     inRouter << Router.redirect
 
 
+showToast : Toast -> StateUpdate a
 showToast =
     inUi << Ui.showToast
 
@@ -200,11 +213,11 @@ handleRouteChange url maybeRoute =
                         -- Redirect if already authenticated
                         Login ->
                             unlessAuthenticated
-                                save
+                                (inPage LoginPageMsg LoginPage LoginPage.init)
 
                         Register ->
                             unlessAuthenticated
-                                save
+                                (inPage RegisterPageMsg RegisterPage RegisterPage.init)
 
                         -- Authenticated only
                         NewPost ->
@@ -213,7 +226,7 @@ handleRouteChange url maybeRoute =
 
                         -- Other
                         About ->
-                            save
+                            setPage AboutPage
 
                         Home ->
                             inPage HomePageMsg HomePage HomePage.init
@@ -222,7 +235,15 @@ handleRouteChange url maybeRoute =
                             inPage ShowPostPageMsg ShowPostPage ShowPostPage.init
 
                         Logout ->
-                            save
+                            setSession Nothing
+                                >> andThen (updateSessionStorage Nothing)
+                                >> andThen (redirect "/")
+                                >> andThen
+                                    (showToast
+                                        { message = "You have been logged out."
+                                        , color = Info
+                                        }
+                                    )
     in
     changePage
         >> andThen
@@ -236,6 +257,11 @@ handleRouteChange url maybeRoute =
                 )
             )
         >> andThen (inUi Ui.closeMenu)
+
+
+updateSessionStorage : Maybe Session -> StateUpdate a
+updateSessionStorage maybeSession =
+    Debug.todo ""
 
 
 update : Msg -> StateUpdate a
@@ -269,14 +295,26 @@ update msg =
 pageView : Page -> Html PageMsg
 pageView page =
     case page of
+        PageNotFound ->
+            Ui.Page.container "Error 404" [ text "That means we couldn’t find this page." ]
+
         HomePage homePageState ->
             Html.map HomePageMsg (HomePage.view homePageState)
 
         NewPostPage newPostPageState ->
             Html.map NewPostPageMsg (NewPostPage.view newPostPageState)
 
-        _ ->
-            span [] [ text "not found" ]
+        ShowPostPage showPostPageState ->
+            div [] [ text "show post page" ]
+
+        LoginPage loginPageState ->
+            div [] [ text "login page" ]
+
+        RegisterPage registerPageState ->
+            div [] [ text "register page" ]
+
+        AboutPage ->
+            Ui.Page.container "About" [ text "Welcome to Facepalm. A place to meet weird people while keeping all your personal data safe." ]
 
 
 view : State -> Document Msg
