@@ -3,9 +3,9 @@ module Page.Login exposing (Msg(..), State, init, subscriptions, update, view)
 import Bulma.Components exposing (..)
 import Bulma.Form exposing (controlInputModifiers)
 import Bulma.Modifiers exposing (..)
+import Burrito.Api as Api
 import Burrito.Callback exposing (..)
 import Burrito.Update exposing (..)
-import Burrito.Update.Api as Api
 import Burrito.Update.Form as Form
 import Data.Session as Session exposing (Session)
 import Form.Login

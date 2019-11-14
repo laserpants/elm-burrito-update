@@ -2,7 +2,7 @@ module Helpers.Api exposing (httpErrorToString, resourceErrorMessage)
 
 import Bulma.Components exposing (..)
 import Bulma.Modifiers exposing (..)
-import Burrito.Update.Api as Api
+import Burrito.Api as Api
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)

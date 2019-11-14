@@ -1,4 +1,4 @@
-module Ui exposing (Msg(..), State, Toast, closeBurgerMenu, closeToast, init, navbar, showInfoToast, showToast, spinner, toastMessage, toggleMenuOpen, update)
+module Ui exposing (Msg(..), State, StateUpdate, Toast, closeMenu, dismissToast, init, navbar, showInfoToast, showToast, spinner, toastMessage, toggleMenuOpen, update)
 
 import Bulma.Components exposing (..)
 import Bulma.Elements exposing (..)
@@ -15,8 +15,8 @@ import Ui.Toast
 
 
 type Msg
-    = ToggleBurgerMenu
-    | CloseToast Int
+    = ToggleMenuOpen
+    | DismissToast Int
 
 
 type alias Toast =
@@ -26,74 +26,86 @@ type alias Toast =
 
 
 type alias State =
-    { menuOpen : Bool
+    { menuIsOpen : Bool
     , toast : Maybe ( Int, Toast )
-    , toastCounter : Int
+    , counter : Int
     }
 
 
-incrementToastCounter : State -> Update State Msg a
-incrementToastCounter state =
-    save { state | toastCounter = 1 + state.toastCounter }
+type alias StateUpdate a =
+    State -> Update State Msg a
 
 
-toggleMenuOpen : State -> Update State Msg a
+incrementCounter : StateUpdate a
+incrementCounter state =
+    save { state | counter = state.counter + 1 }
+
+
+toggleMenuOpen : StateUpdate a
 toggleMenuOpen state =
-    save { state | menuOpen = not state.menuOpen }
+    save { state | menuIsOpen = not state.menuIsOpen }
 
 
-closeBurgerMenu : State -> Update State Msg a
-closeBurgerMenu state =
-    save { state | menuOpen = False }
+closeMenu : StateUpdate a
+closeMenu state =
+    save { state | menuIsOpen = False }
 
 
-setToast : Toast -> State -> Update State Msg a
+setToast : Toast -> StateUpdate a
 setToast toast state =
-    save { state | toast = Just ( state.toastCounter, toast ) }
+    save { state | toast = Just ( state.counter, toast ) }
 
 
-showToast : Toast -> State -> Update State Msg a
-showToast toast state =
-    state
-        |> setToast toast
-        |> andAddCmd (Task.perform (CloseToast state.toastCounter |> always) (Process.sleep 4000))
-        |> andThen incrementToastCounter
+showToast : Toast -> StateUpdate a
+showToast toast =
+    using
+        (\{ counter } ->
+            let 
+                dismissToastTask = 
+                    always (DismissToast counter)
+
+            in
+            setToast toast
+                >> andAddCmd (Task.perform dismissToastTask (Process.sleep 4000))
+                >> andThen incrementCounter
+        )
 
 
-showInfoToast : String -> State -> Update State Msg a
+showInfoToast : String -> StateUpdate a
 showInfoToast message =
     showToast { message = message, color = Info }
 
 
-closeToast : State -> Update State Msg a
-closeToast state =
+dismissToast : StateUpdate a
+dismissToast state =
     save { state | toast = Nothing }
 
 
 init : Update State msg a
 init =
-    save State
-        |> andMap (save False)
-        |> andMap (save Nothing)
-        |> andMap (save 1)
+    save 
+        { menuIsOpen = False
+        , toast = Nothing
+        , counter = 1
+        }
 
 
-update : Msg -> State -> Update State Msg a
+update : Msg -> StateUpdate a
 update msg =
     case msg of
-        ToggleBurgerMenu ->
+        ToggleMenuOpen ->
             toggleMenuOpen
 
-        CloseToast id ->
-            with .toast
-                (\toast ->
+        DismissToast id ->
+            using
+                (\{ toast } ->
                     case toast of
                         Nothing ->
                             save
 
                         Just ( toastId, _ ) ->
                             if id == toastId then
-                                closeToast
+                                dismissToast
 
                             else
                                 save
@@ -107,21 +119,21 @@ toastMessage { toast } toMsg =
             text ""
 
         Just ( id, { message, color } ) ->
-            notificationWithDelete color [] (CloseToast id) [ text message ]
+            notificationWithDelete color [] (DismissToast id) [ text message ]
                 |> Ui.Toast.container
                 |> Html.map toMsg
 
 
-navbar : Maybe Session -> { a | isHomePage : Bool, isNewPostPage : Bool, isAboutPage : Bool } -> State -> (Msg -> msg) -> Html msg
-navbar session page { menuOpen } toMsg =
+--navbar : Maybe Session -> { a | isHomePage : Bool, isNewPostPage : Bool, isAboutPage : Bool } -> State -> (Msg -> msg) -> Html msg
+navbar { menuIsOpen } maybeSession =
     let
         burger =
-            navbarBurger menuOpen
-                [ class "has-text-white", onClick ToggleBurgerMenu ]
+            navbarBurger menuIsOpen
+                [ class "has-text-white", onClick ToggleMenuOpen ]
                 [ span [] [], span [] [], span [] [] ]
 
         buttons =
-            if Maybe.isNothing session then
+            if Maybe.isNothing maybeSession then
                 [ p [ class "control" ]
                     [ a [ class "button is-primary", href "/register" ] [ text "Register" ] ]
                 , p [ class "control" ]
@@ -139,20 +151,28 @@ navbar session page { menuOpen } toMsg =
         [ navbarBrand []
             burger
             [ navbarItem False [] [ h5 [ class "title is-5" ] [ a [ class "has-text-white", href "/" ] [ text "Facepalm" ] ] ] ]
-        , navbarMenu menuOpen
+        , navbarMenu menuIsOpen
             []
             [ navbarStart [ class "is-unselectable" ]
-                [ navbarItemLink page.isHomePage [ href "/" ] [ text "Home" ]
-                , navbarItemLink page.isAboutPage [ href "/about" ] [ text "About" ]
-                , navbarItemLink page.isNewPostPage [ href "/posts/new" ] [ text "New post" ]
+                [ navbarItemLink True [ href "/" ] [ text "Home" ]
+                , navbarItemLink False [ href "/about" ] [ text "About" ]
+                , navbarItemLink False [ href "/posts/new" ] [ text "New post" ]
+                --[ navbarItemLink page.isHomePage [ href "/" ] [ text "Home" ]
+                --, navbarItemLink page.isAboutPage [ href "/about" ] [ text "About" ]
+                --, navbarItemLink page.isNewPostPage [ href "/posts/new" ] [ text "New post" ]
                 ]
             , navbarEnd []
                 [ navbarItem False [] [ div [ class "field is-grouped" ] buttons ] ]
             ]
         ]
-        |> Html.map toMsg
+--        |> Html.map toMsg
 
 
 spinner : Html msg
 spinner =
-    div [ class "sk-three-bounce" ] [ div [ class "sk-child sk-bounce1" ] [], div [ class "sk-child sk-bounce2" ] [], div [ class "sk-child sk-bounce3" ] [] ]
+    div 
+        [ class "sk-three-bounce" ] 
+        [ div [ class "sk-child sk-bounce1" ] []
+        , div [ class "sk-child sk-bounce2" ] []
+        , div [ class "sk-child sk-bounce3" ] [] 
+        ]

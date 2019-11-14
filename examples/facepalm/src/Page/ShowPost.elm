@@ -2,9 +2,9 @@ module Page.ShowPost exposing (Msg(..), State, init, subscriptions, update, view
 
 import Bulma.Elements exposing (..)
 import Bulma.Modifiers exposing (..)
+import Burrito.Api as Api
 import Burrito.Callback exposing (..)
 import Burrito.Update exposing (..)
-import Burrito.Update.Api as Api
 import Burrito.Update.Form as Form
 import Data.Comment as Comment exposing (Comment)
 import Data.Post as Post exposing (Post)

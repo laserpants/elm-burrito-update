@@ -5,8 +5,7 @@ import Json.Decode as Json exposing (field, int, list, string)
 
 
 type alias Post =
-    { id : Int
-    , title : String
+    { title : String
     , body : String
     , comments : List Comment
     }
@@ -14,8 +13,7 @@ type alias Post =
 
 decoder : Json.Decoder Post
 decoder =
-    Json.map4 Post
-        (field "id" int)
+    Json.map3 Post
         (field "title" string)
         (field "body" string)
         (field "comments" (list Comment.decoder))
