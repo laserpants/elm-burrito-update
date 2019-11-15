@@ -1,17 +1,79 @@
 module Form.Login exposing (..)
 
 
-type alias Input =
-    {}
+type Status val err
+    = Pristine
+    | Error err
+    | Valid val
+
+
+type alias Input val err =
+    { val : String
+    , dirty : Bool
+    , status : Status val err
+    }
 
 
 type alias Checkbox =
-    {}
+    { checked : Bool
+    , dirty : Bool
+    , status : Status Bool ()
+    }
+
+
+
+--
+
+
+type alias Model fields =
+    { fields : fields
+    , initial : fields
+    , disabled : Bool
+    , submitted : Bool
+    }
+
+
+setDisabled : Bool -> Model fields -> Update (Model fields) msg a
+setDisabled disabled model =
+    save { model | disabled = disabled }
+
+
+setSubmitted : Bool -> Model fields -> Update (Model fields) msg a
+setSubmitted submitted model =
+    save { model | submitted = submitted }
+
+
+reset : Model fields -> Update (Model fields) msg a
+reset ({ initial } as model) =
+    save
+        { model
+            | fields = initial
+            , disabled = False
+            , submitted = False
+        }
+
+
+init : fields -> Update (Model fields) msg a
+init fields =
+    save
+        { fields = fields
+        , initial = fields
+        , disabled = False
+        , submitted = False
+        }
+
+
+
+--
+
+
+type Error
+    = SomeError
 
 
 type alias Fields =
-    { email : Input String
-    , password : Input String
+    { email : Input String Error
+    , password : Input String Error
     , rememberMe : Checkbox
     }
 
