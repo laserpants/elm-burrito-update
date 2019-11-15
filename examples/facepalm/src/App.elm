@@ -334,7 +334,7 @@ pageView page =
             div [] [ text "show post page" ]
 
         LoginPage loginPageState ->
-            div [] [ text "login page" ]
+            Html.map LoginPageMsg (LoginPage.view loginPageState)
 
         RegisterPage registerPageState ->
             div [] [ text "register page" ]

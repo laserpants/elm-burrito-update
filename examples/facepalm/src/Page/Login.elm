@@ -1,8 +1,6 @@
 module Page.Login exposing (Msg(..), State, init, subscriptions, update, view)
 
---import Bulma.Components exposing (..)
 --import Bulma.Form exposing (controlInputModifiers)
---import Bulma.Modifiers exposing (..)
 --import Burrito.Update.Form as Form
 --import Form.Login
 --import Helpers exposing (..)
@@ -10,7 +8,9 @@ module Page.Login exposing (Msg(..), State, init, subscriptions, update, view)
 --import Helpers.Form exposing (..)
 --import Http
 
+import Bulma.Components exposing (..)
 import Bulma.Form exposing (controlCheckBox, controlHelp, controlInput, controlInputModifiers, controlLabel, controlPassword, controlTextArea, controlTextAreaModifiers)
+import Bulma.Modifiers exposing (..)
 import Burrito.Api as Api
 import Burrito.Api.Json as JsonApi
 import Burrito.Callback exposing (..)
@@ -87,34 +87,76 @@ subscriptions _ =
     Sub.none
 
 
+formView : State -> Bool -> Html Msg
+formView state disabled =
+    fieldset
+        [ Html.Attributes.disabled disabled ]
+        [ Bulma.Form.field []
+            [ controlLabel [] [ text "Username" ]
+            , controlInput
+                controlInputModifiers
+                []
+                []
+                []
+            ]
+        , Bulma.Form.field []
+            [ controlLabel [] [ text "Password" ]
+            , controlPassword
+                controlInputModifiers
+                []
+                []
+                []
+            ]
+        , Bulma.Form.field []
+            [ controlCheckBox False
+                []
+                []
+                []
+                [ text "Remember me"
+                ]
+            ]
+        , Bulma.Form.field []
+            [ div [ class "control" ]
+                [ button
+                    [ type_ "submit"
+                    , class "button is-primary"
+                    ]
+                    [ text
+                        (if disabled then
+                            "Please wait"
+
+                         else
+                            "Log in"
+                        )
+                    ]
+                ]
+            ]
+        ]
+
+
 view : State -> Html Msg
 view state =
     let
         disabled =
-            Debug.todo ""
+            False
     in
     div
-        []
-        [ fieldset [ Html.Attributes.disabled disabled ]
-            [ Bulma.Form.field []
-                [ controlLabel [] [ text "Username" ]
-                ]
-            , Bulma.Form.field []
-                [ controlLabel [] [ text "Password" ]
-                ]
-            , Bulma.Form.field []
-                []
-            , Bulma.Form.field []
-                [ div [ class "control" ]
-                    [ button [ type_ "submit", class "button is-primary" ]
-                        [ text
-                            (if disabled then
-                                "Please wait"
-
-                             else
-                                "Log in"
-                            )
+        [ class "columns is-centered is-mobile"
+        , style "margin" "6em 0"
+        ]
+        [ div
+            [ class "column is-narrow" ]
+            [ card []
+                [ cardContent []
+                    [ h3 [ class "title is-3" ] [ text "Log in" ]
+                    , message { messageModifiers | color = Info }
+                        [ style "max-width" "360px" ]
+                        [ messageBody []
+                            [ text "This is a demo. Log in with username 'test' and password 'test'." ]
                         ]
+
+                    --                    , resourceErrorMessage api.resource
+                    , formView state disabled
                     ]
                 ]
             ]
