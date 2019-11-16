@@ -1,5 +1,6 @@
-module Page.Login exposing (Msg(..), State, init, subscriptions, update, view)
+module Page.Login exposing (..)
 
+-- Msg(..), State, init, subscriptions, update, view)
 --import Bulma.Form exposing (controlInputModifiers)
 --import Burrito.Update.Form as Form
 --import Form.Login
@@ -14,8 +15,10 @@ import Bulma.Modifiers exposing (..)
 import Burrito.Api as Api
 import Burrito.Api.Json as JsonApi
 import Burrito.Callback exposing (..)
+import Burrito.Form2 as Form exposing (FieldValue(..))
 import Burrito.Update exposing (..)
 import Data.Session as Session exposing (Session)
+import Form.Login as LoginForm
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -24,17 +27,12 @@ import Json.Decode as Json
 
 type Msg
     = ApiMsg (Api.Msg Session)
-
-
-
---    | FormMsg (Form.Msg Form.Login.Msg)
---    = NoMsg
---    = FormMsg Form.Msg
---    | ApiMsg (Api.Msg Session)
+    | FormMsg LoginForm.Msg
 
 
 type alias State =
     { api : Api.Model Session
+    , form : Form.Model LoginForm.Fields
     }
 
 
@@ -43,11 +41,24 @@ insertAsApiIn state api =
     save { state | api = api }
 
 
+insertAsFormIn : State -> Form.Model LoginForm.Fields -> Update State msg a
+insertAsFormIn state form =
+    save { state | form = form }
+
+
 inAuthApi : Api.ModelUpdate Session (StateUpdate a) -> StateUpdate a
 inAuthApi doUpdate state =
     doUpdate state.api
         |> andThen (insertAsApiIn state)
         |> mapCmd ApiMsg
+        |> runCallbacks
+
+
+inLoginForm : Form.ModelUpdate LoginForm.Fields LoginForm.Msg (StateUpdate a) -> StateUpdate a
+inLoginForm doUpdate state =
+    doUpdate state.form
+        |> andThen (insertAsFormIn state)
+        |> mapCmd FormMsg
         |> runCallbacks
 
 
@@ -68,6 +79,7 @@ init =
     in
     save State
         |> andMap api
+        |> andMap (LoginForm.init |> mapCmd FormMsg)
 
 
 update : Msg -> StateUpdate a
@@ -81,39 +93,53 @@ update msg =
                     }
                 )
 
+        FormMsg formMsg ->
+            inLoginForm
+                (LoginForm.update formMsg)
+
 
 subscriptions : State -> Sub Msg
 subscriptions _ =
     Sub.none
 
 
-formView : State -> Bool -> Html Msg
-formView state disabled =
-    fieldset
+formView : State -> Bool -> Html LoginForm.Msg
+formView { form } disabled =
+    let
+        { email, password, rememberMe } =
+            form.fields
+    in
+    [ fieldset
         [ Html.Attributes.disabled disabled ]
         [ Bulma.Form.field []
             [ controlLabel [] [ text "Username" ]
-            , controlInput
-                controlInputModifiers
-                []
-                []
-                []
+            , Html.map LoginForm.EmailFieldMsg
+                (controlInput controlInputModifiers
+                    []
+                    ([ placeholder "Email" ] ++ Form.inputAttrs email)
+                    []
+                )
+            , div [] [ text (Debug.toString email) ]
             ]
         , Bulma.Form.field []
             [ controlLabel [] [ text "Password" ]
-            , controlPassword
-                controlInputModifiers
-                []
-                []
-                []
+            , Html.map LoginForm.PasswordFieldMsg
+                (controlPassword controlInputModifiers
+                    []
+                    ([ placeholder "Password" ] ++ Form.inputAttrs password)
+                    []
+                )
+            , div [] [ text (Debug.toString password) ]
             ]
         , Bulma.Form.field []
-            [ controlCheckBox False
-                []
-                []
-                []
-                [ text "Remember me"
-                ]
+            [ Html.map LoginForm.RememberMeFieldMsg
+                (controlCheckBox False
+                    []
+                    (Form.checkboxAttrs rememberMe)
+                    []
+                    [ text "Remember me"
+                    ]
+                )
             ]
         , Bulma.Form.field []
             [ div [ class "control" ]
@@ -131,7 +157,9 @@ formView state disabled =
                     ]
                 ]
             ]
+          ]
         ]
+            |> Html.form [ onSubmit (LoginForm.Submit) ]
 
 
 view : State -> Html Msg
@@ -156,7 +184,7 @@ view state =
                         ]
 
                     --                    , resourceErrorMessage api.resource
-                    , formView state disabled
+                    , Html.map FormMsg (formView state disabled)
                     ]
                 ]
             ]

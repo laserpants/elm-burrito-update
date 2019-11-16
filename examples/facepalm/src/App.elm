@@ -78,7 +78,11 @@ insertAsRouterIn state router =
 
 setRedirect : Url -> StateUpdate a
 setRedirect { path } state =
-    save { state | redirect = Just (String.dropLeft (String.length state.router.basePath) path) }
+    let
+        url =
+            String.dropLeft (String.length state.router.basePath) path
+    in
+    save { state | redirect = Just url }
 
 
 resetRedirect : StateUpdate a
@@ -312,6 +316,11 @@ update msg =
                             inPage NewPostPageMsg
                                 NewPostPage
                                 (NewPostPage.update newPostPageMsg newPostPageState)
+
+                        ( LoginPageMsg homePageMsg, LoginPage homePageState ) ->
+                            inPage LoginPageMsg
+                                LoginPage
+                                (LoginPage.update homePageMsg homePageState)
 
                         _ ->
                             save

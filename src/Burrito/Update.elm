@@ -33,7 +33,7 @@ These functions address the need to map over functions of more than one argument
 @docs run, run2, run3
 
 
-# Helpers
+# Pointfree Helpers
 
 @docs andAddCmd, using, with, andWith, andUsing
 

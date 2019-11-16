@@ -14,16 +14,16 @@ import Ui exposing (spinner)
 import Ui.Page
 
 
-type alias DbPost =
-    DbRecord Post
+type alias Posts =
+    List (DbRecord Post)
 
 
 type Msg
-    = ApiMsg (Api.Msg (List DbPost))
+    = ApiMsg (Api.Msg Posts)
 
 
 type alias State =
-    { posts : Api.Model (List DbPost)
+    { posts : Api.Model Posts
     }
 
 
@@ -31,12 +31,12 @@ type alias StateUpdate a =
     State -> Update State Msg a
 
 
-insertAsPostsIn : State -> Api.Model (List DbPost) -> Update State msg a
+insertAsPostsIn : State -> Api.Model Posts -> Update State msg a
 insertAsPostsIn state posts =
     save { state | posts = posts }
 
 
-inPostsApi : Api.ModelUpdate (List DbPost) (StateUpdate a) -> StateUpdate a
+inPostsApi : Api.ModelUpdate Posts (StateUpdate a) -> StateUpdate a
 inPostsApi doUpdate state =
     doUpdate state.posts
         |> andThen (insertAsPostsIn state)
@@ -76,7 +76,7 @@ update msg =
 
 
 subscriptions : State -> Sub Msg
-subscriptions state =
+subscriptions _ =
     Sub.none
 
 

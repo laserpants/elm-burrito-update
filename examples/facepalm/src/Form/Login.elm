@@ -1,81 +1,143 @@
 module Form.Login exposing (..)
 
-
-type Status val err
-    = Pristine
-    | Error err
-    | Valid val
-
-
-type alias Input val err =
-    { val : String
-    , dirty : Bool
-    , status : Status val err
-    }
-
-
-type alias Checkbox =
-    { checked : Bool
-    , dirty : Bool
-    , status : Status Bool ()
-    }
+import Burrito.Callback exposing (..)
+import Burrito.Form2 as Form exposing (..)
+import Burrito.Form2.Validate as Validate
+import Burrito.Update exposing (..)
 
 
 
+--type Status val err
+--    = Pristine
+--    | Error err
+--    | Valid val
+--
+--
+--type alias Input val err =
+--    { val : String
+--    , dirty : Bool
+--    , status : Status val err
+--    }
+--
+--
+--type alias Checkbox =
+--    { checked : Bool
+--    , dirty : Bool
+--    , status : Status Bool ()
+--    }
+--
+--type alias Model fields =
+--    { fields : fields
+--    , initial : fields
+--    , disabled : Bool
+--    , submitted : Bool
+--    }
+--
+--
+--setDisabled : Bool -> Model fields -> Update (Model fields) msg a
+--setDisabled disabled model =
+--    save { model | disabled = disabled }
+--
+--
+--setSubmitted : Bool -> Model fields -> Update (Model fields) msg a
+--setSubmitted submitted model =
+--    save { model | submitted = submitted }
+--
+--
+--reset : Model fields -> Update (Model fields) msg a
+--reset ({ initial } as model) =
+--    save
+--        { model
+--            | fields = initial
+--            , disabled = False
+--            , submitted = False
+--        }
 --
 
 
-type alias Model fields =
-    { fields : fields
-    , initial : fields
-    , disabled : Bool
-    , submitted : Bool
-    }
-
-
-setDisabled : Bool -> Model fields -> Update (Model fields) msg a
-setDisabled disabled model =
-    save { model | disabled = disabled }
-
-
-setSubmitted : Bool -> Model fields -> Update (Model fields) msg a
-setSubmitted submitted model =
-    save { model | submitted = submitted }
-
-
-reset : Model fields -> Update (Model fields) msg a
-reset ({ initial } as model) =
-    save
-        { model
-            | fields = initial
-            , disabled = False
-            , submitted = False
-        }
-
-
-init : fields -> Update (Model fields) msg a
-init fields =
-    save
-        { fields = fields
-        , initial = fields
-        , disabled = False
-        , submitted = False
-        }
-
-
-
---
+type Msg
+    = EmailFieldMsg Form.Msg
+    | PasswordFieldMsg Form.Msg
+    | RememberMeFieldMsg Form.Msg
+    | Submit
 
 
 type Error
-    = SomeError
+    = MustNotBeEmpty
+
+
+type alias EmailField =
+    Field String Error
+
+
+type alias PasswordField =
+    Field String Error
+
+
+type alias RememberMeField =
+    Field Bool Never
 
 
 type alias Fields =
-    { email : Input String Error
-    , password : Input String Error
-    , rememberMe : Checkbox
+    { email : EmailField
+    , password : PasswordField
+    , rememberMe : RememberMeField
     }
+
+
+mapEmailField : (EmailField -> EmailField) -> Fields -> Fields
+mapEmailField fun fields =
+    { fields | email = fun fields.email }
+
+
+mapPasswordField : (PasswordField -> PasswordField) -> Fields -> Fields
+mapPasswordField fun fields =
+    { fields | password = fun fields.password }
+
+
+mapRememberMeField : (RememberMeField -> RememberMeField) -> Fields -> Fields
+mapRememberMeField fun fields =
+    { fields | rememberMe = fun fields.rememberMe }
+
+
+validate : Fields -> Fields
+validate fields =
+    let
+        { email, password } =
+            fields
+    in
+    { fields
+        | email = Form.validate (Validate.stringNotEmpty MustNotBeEmpty) email
+        , password = Form.validate (Validate.stringNotEmpty MustNotBeEmpty) password
+    }
+
+
+init : Update (Form.Model Fields) Msg a
+init =
+    Form.init validate
+        { email = initialString
+        , password = initialString
+        , rememberMe = initialBool
+        }
+
+
+update :
+    Msg
+    -> Form.Model Fields
+    -> Update (Form.Model Fields) Msg a
+update msg =
+    case msg of
+        EmailFieldMsg formMsg ->
+            Form.update mapEmailField EmailFieldMsg formMsg
+
+        PasswordFieldMsg formMsg ->
+            Form.update mapPasswordField PasswordFieldMsg formMsg
+
+        RememberMeFieldMsg formMsg ->
+            Form.update mapRememberMeField RememberMeFieldMsg formMsg
+
+        Submit ->
+            Form.submit
 
 
 

@@ -1,4 +1,4 @@
-module Ui exposing (Msg(..), State, StateUpdate, Toast, closeMenu, dismissToast, init, navbar, showInfoToast, showToast, spinner, toastMessage, toggleMenuOpen, update)
+module Ui exposing (Msg(..), State, StateUpdate, Toast, closeMenu, dismissToast, init, navbar, showInfoToast, showToast, spinner, toastMessage, toggleMenu, update)
 
 import Bulma.Components exposing (..)
 import Bulma.Elements exposing (..)
@@ -15,7 +15,7 @@ import Ui.Toast
 
 
 type Msg
-    = ToggleMenuOpen
+    = ToggleMenu
     | DismissToast Int
 
 
@@ -41,8 +41,8 @@ incrementCounter state =
     save { state | counter = state.counter + 1 }
 
 
-toggleMenuOpen : StateUpdate a
-toggleMenuOpen state =
+toggleMenu : StateUpdate a
+toggleMenu state =
     save { state | menuIsOpen = not state.menuIsOpen }
 
 
@@ -92,8 +92,8 @@ init =
 update : Msg -> StateUpdate a
 update msg =
     case msg of
-        ToggleMenuOpen ->
-            toggleMenuOpen
+        ToggleMenu ->
+            toggleMenu
 
         DismissToast id ->
             using
@@ -111,16 +111,18 @@ update msg =
                 )
 
 
-toastMessage : State -> (Msg -> msg) -> Html msg
-toastMessage { toast } toMsg =
+toastMessage : State -> Html Msg
+toastMessage { toast } =
     case toast of
         Nothing ->
             text ""
 
         Just ( id, { message, color } ) ->
-            notificationWithDelete color [] (DismissToast id) [ text message ]
-                |> Ui.Toast.container
-                |> Html.map toMsg
+            let
+                notification =
+                    notificationWithDelete color [] (DismissToast id) [ text message ]
+            in
+            Ui.Toast.container notification
 
 
 
@@ -131,7 +133,7 @@ navbar { menuIsOpen } maybeSession =
     let
         burger =
             navbarBurger menuIsOpen
-                [ class "has-text-white", onClick ToggleMenuOpen ]
+                [ class "has-text-white", onClick ToggleMenu ]
                 [ span [] [], span [] [], span [] [] ]
 
         buttons =
