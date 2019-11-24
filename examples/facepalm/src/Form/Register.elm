@@ -27,6 +27,12 @@ type alias Msg =
     Form.Msg Fields
 
 
+type UsernameStatus
+    = Blank
+    | IsAvailable Bool
+    | Unknown
+
+
 type alias Data =
     { name : String
     , email : String
@@ -74,15 +80,9 @@ init =
 validate : Validate Fields Error Data
 validate =
     let
-        validateName =
-            Validate.stringNotEmpty MustNotBeEmpty
-
         validateEmail =
             Validate.stringNotEmpty MustNotBeEmpty
                 |> Validate.andThen (Validate.email MustBeValidEmail)
-
-        validatePhoneNumber =
-            Validate.stringNotEmpty MustNotBeEmpty
 
         validatePassword =
             Validate.stringNotEmpty MustNotBeEmpty
@@ -91,17 +91,14 @@ validate =
         validatePasswordConfirmation =
             Validate.stringNotEmpty MustNotBeEmpty
                 |> Validate.andThen (Validate.mustMatchField Password MustMatchPassword)
-
-        validateAgreeWithTerms =
-            Validate.mustBeChecked MustAgreeWithTerms
     in
     Validate.record Data
-        |> Validate.inputField Name validateName
+        |> Validate.inputField Name (Validate.stringNotEmpty MustNotBeEmpty)
         |> Validate.inputField Email validateEmail
-        |> Validate.inputField PhoneNumber validatePhoneNumber
+        |> Validate.inputField PhoneNumber (Validate.stringNotEmpty MustNotBeEmpty)
         |> Validate.inputField Password validatePassword
         |> Validate.inputField PasswordConfirmation validatePasswordConfirmation
-        |> Validate.checkbox AgreeWithTerms validateAgreeWithTerms
+        |> Validate.checkbox AgreeWithTerms (Validate.mustBeChecked MustAgreeWithTerms)
 
 
 view : Model -> Html Msg
