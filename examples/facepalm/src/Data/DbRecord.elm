@@ -10,5 +10,5 @@ type alias DbRecord a =
 
 
 dbRecordDecoder : Json.Decoder a -> Json.Decoder (DbRecord a)
-dbRecordDecoder itemDecoder =
-    Json.map2 DbRecord (field "id" int) itemDecoder
+dbRecordDecoder =
+    Json.map2 DbRecord (field "id" int)

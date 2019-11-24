@@ -6,7 +6,6 @@ var users =
     id: 1,
     name: 'Mr. Test',
     password: 'test',
-    username: 'test',
     email: 'test@test.com',
     rememberMe: false
   }
@@ -46,7 +45,6 @@ var commentId = 0;
 var delay = 400;
 
 xhook.before(function(request, callback) {
-
   if (request.url.endsWith('auth/register') && 'POST' === request.method) {
     setTimeout(function() {
       var params = JSON.parse(request.body);
@@ -71,7 +69,7 @@ xhook.before(function(request, callback) {
     setTimeout(function() {
       var params = JSON.parse(request.body),
           filtered = users.filter(function(user) {
-        return user.username === params.username && user.password === params.password;
+        return user.email === params.email && user.password === params.password;
       });
       if (filtered.length > 0) {
         var user = filtered[0];
@@ -135,8 +133,9 @@ xhook.before(function(request, callback) {
     }, delay);
   } else if (/posts\/\d+\/comments$/.test(request.url) && 'POST' === request.method) {
     setTimeout(function() {
-      var comment = JSON.parse(request.body);
-          filtered = posts.filter(function(post) { return post.id == comment.postId; });
+      var comment = JSON.parse(request.body),
+          postId = request.url.match(/posts\/(\d+)\/comments$/)[1],
+          filtered = posts.filter(function(post) { return post.id == postId; });
       if (filtered.length > 0) {
         var post = filtered[0];
         post.comments = post.comments || [];

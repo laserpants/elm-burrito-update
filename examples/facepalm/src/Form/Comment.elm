@@ -1,10 +1,11 @@
-module Form.Comment exposing (Fields, toJson, validate, view)
+module Form.Comment exposing (..)
 
-import Bulma.Form exposing (controlEmail, controlHelp, controlInputModifiers, controlLabel, controlTextArea, controlTextAreaModifiers)
+import Bulma.Form exposing (controlCheckBox, controlHelp, controlInput, controlInputModifiers, controlLabel, controlPassword, controlTextArea, controlTextAreaModifiers)
 import Bulma.Modifiers exposing (..)
-import Form exposing (Form)
-import Form.Field exposing (FieldValue(..))
-import Form.Validate exposing (Validation, andMap, field, succeed)
+import Burrito.Form2 as Form exposing (Validate, checkbox, inputField)
+import Burrito.Form2.Validate as Validate
+import Burrito.Update exposing (Update)
+import Form.Error exposing (Error(..))
 import Helpers.Form exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -13,81 +14,95 @@ import Json.Decode as Json
 import Json.Encode as Encode
 
 
-type alias Fields =
+type Fields
+    = Email
+    | Body
+
+
+type alias Msg =
+    Form.Msg Fields
+
+
+type alias Data =
     { email : String
     , body : String
     }
 
 
-validate : Validation Never Fields
-validate =
-    succeed Fields
-        |> andMap (field "email" validateEmail)
-        |> andMap (field "body" validateStringNonEmpty)
-
-
-toJson : Int -> Fields -> Json.Value
-toJson postId { email, body } =
+toJson : Data -> Json.Value
+toJson { email, body } =
     Encode.object
-        [ ( "postId", Encode.int postId )
-        , ( "email", Encode.string email )
+        [ ( "email", Encode.string email )
         , ( "body", Encode.string body )
         ]
 
 
-view : Form Never Fields -> Bool -> (Form.Msg -> msg) -> Html msg
-view form disabled toMsg =
+type alias Model =
+    Form.Model Fields Error Data
+
+
+type alias ModelUpdate a =
+    Form.ModelUpdate Fields Error Data a
+
+
+init : Update Model msg a
+init =
     let
-        info =
-            fieldInfo (always "")
-
-        email =
-            form |> Form.getFieldAsString "email" |> info controlInputModifiers
-
-        body =
-            form |> Form.getFieldAsString "body" |> info controlTextAreaModifiers
+        fields =
+            [ ( Email, inputField "" )
+            , ( Body, inputField "" )
+            ]
     in
-    [ fieldset [ Html.Attributes.disabled disabled ]
-        [ Bulma.Form.field []
-            [ controlLabel [] [ text "Email" ]
-            , controlEmail email.modifiers
-                []
-                [ placeholder "Email"
-                , onFocus (Form.Focus email.path)
-                , onBlur (Form.Blur email.path)
-                , onInput (String >> Form.Input email.path Form.Text)
-                , value (Maybe.withDefault "" email.value)
-                ]
-                []
-            , controlHelp Danger [] [ Html.text email.errorMessage ]
-            ]
-        , Bulma.Form.field []
-            [ controlLabel [] [ text "Body" ]
-            , controlTextArea body.modifiers
-                []
-                [ placeholder "Body"
-                , onFocus (Form.Focus body.path)
-                , onBlur (Form.Blur body.path)
-                , onInput (String >> Form.Input body.path Form.Text)
-                , value (Maybe.withDefault "" body.value)
-                ]
-                []
-            , controlHelp Danger [] [ Html.text body.errorMessage ]
-            ]
-        , Bulma.Form.field []
-            [ div [ class "control" ]
-                [ button [ type_ "submit", class "button is-primary" ]
-                    [ text
-                        (if disabled then
-                            "Please wait"
+    Form.init validate fields
 
-                         else
-                            "Send comment"
-                        )
+
+validate : Validate Fields Error Data
+validate =
+    let
+        validateEmail =
+            Validate.stringNotEmpty MustNotBeEmpty
+                |> Validate.andThen (Validate.email MustBeValidEmail)
+
+        validateBody =
+            Validate.stringNotEmpty MustNotBeEmpty
+    in
+    Validate.record Data
+        |> Validate.inputField Email validateEmail
+        |> Validate.inputField Body validateBody
+
+
+view : Model -> Html Msg
+view { fields, disabled, submitted } =
+    Form.lookup2 fields
+        Email
+        Body
+        (\email body ->
+            [ fieldset
+                [ Html.Attributes.disabled disabled ]
+                [ Bulma.Form.field []
+                    [ controlLabel [] [ text "Email" ]
+                    , controlInput_ Email email "Email"
+                    , controlErrorHelp email
+                    ]
+                , Bulma.Form.field []
+                    [ controlLabel [] [ text "Body" ]
+                    , controlTextArea_ Body body "Body"
+                    , controlErrorHelp body
+                    ]
+                , Bulma.Form.field []
+                    [ div [ class "control" ]
+                        [ button [ class "button is-primary" ]
+                            [ text
+                                (if disabled then
+                                    "Please wait"
+
+                                 else
+                                    "Send comment"
+                                )
+                            ]
+                        ]
                     ]
                 ]
             ]
-        ]
-    ]
-        |> Html.form [ onSubmit Form.Submit ]
-        |> Html.map toMsg
+                |> Html.form [ onSubmit Form.Submit ]
+        )

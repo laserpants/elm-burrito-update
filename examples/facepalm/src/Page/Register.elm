@@ -1,21 +1,19 @@
 module Page.Register exposing (Msg(..), State, init, subscriptions, update, view)
 
+import Bulma.Columns exposing (columnModifiers, columnsModifiers, narrowColumnModifiers)
 import Bulma.Components exposing (..)
-import Bulma.Elements exposing (..)
-import Bulma.Form exposing (controlInputModifiers)
+import Bulma.Form exposing (controlCheckBox, controlEmail, controlHelp, controlInput, controlInputModifiers, controlLabel, controlPassword, controlPhone, controlTextArea, controlTextAreaModifiers)
 import Bulma.Modifiers exposing (..)
 import Burrito.Api as Api exposing (Resource(..))
+import Burrito.Api.Json as JsonApi
 import Burrito.Callback exposing (..)
+import Burrito.Form2 as Form exposing (Variant(..))
 import Burrito.Update exposing (..)
-import Burrito.Update.Form as Form
 import Data.User as User exposing (User)
 import Dict exposing (Dict)
-import Form as F
-import Form.Field exposing (FieldValue(..))
-import Form.Register exposing (UsernameStatus(..))
-import Form.Register.Custom
+import Form.Register as RegisterForm exposing (Fields(..))
 import Helpers exposing (..)
-import Helpers.Api exposing (resourceErrorMessage)
+import Helpers.Api exposing (requestErrorMessage)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -26,30 +24,122 @@ import Ports
 
 
 type Msg
-    = NoMsg
+    = ApiMsg (Api.Msg User)
+    | FormMsg RegisterForm.Msg
+    | WebsocketMsg String
 
 
 type alias State =
-    {}
+    { api : Api.Model User
+    , form : RegisterForm.Model
+    , usernames : Dict String Bool
+    , usernameStatus : UsernameStatus
+    }
 
 
+type alias StateUpdate a =
+    State -> Update State Msg a
+
+
+insertAsApiIn : State -> Api.Model User -> Update State msg a
+insertAsApiIn state api =
+    save { state | api = api }
+
+
+insertAsFormIn : State -> RegisterForm.Model -> Update State msg a
+insertAsFormIn state form =
+    save { state | form = form }
+
+
+inRegisterApi : Api.ModelUpdate User (StateUpdate a) -> StateUpdate a
+inRegisterApi doUpdate state =
+    state.api
+        |> doUpdate
+        |> andThen (insertAsApiIn state)
+        |> mapCmd ApiMsg
+        |> runCallbacks
+
+
+inRegisterForm : RegisterForm.ModelUpdate (StateUpdate a) -> StateUpdate a
+inRegisterForm doUpdate state =
+    state.form
+        |> doUpdate
+        |> andThen (insertAsFormIn state)
+        |> mapCmd FormMsg
+        |> runCallbacks
+
+
+init : Update State msg a
 init =
-    save
-        {}
+    let
+        api =
+            JsonApi.init
+                { endpoint = "/auth/register"
+                , method = Api.HttpPost
+                , decoder = Json.field "user" User.decoder
+                , headers = []
+                }
+    in
+    save State
+        |> andMap api
+        |> andMap RegisterForm.init
+        |> andMap (save Dict.empty)
+        |> andMap (save Blank)
 
 
-update msg =
-    save
+handleSubmit : RegisterForm.Data -> StateUpdate a
+handleSubmit data =
+    let
+        json =
+            Http.jsonBody (RegisterForm.toJson data)
+    in
+    inRegisterApi (Api.sendRequest "" (Just json))
 
 
-subscriptions state =
+update : Msg -> { onRegistrationComplete : User -> a } -> StateUpdate a
+update msg { onRegistrationComplete } =
+    case msg of
+        ApiMsg apiMsg ->
+            inRegisterApi
+                (Api.update apiMsg
+                    { onSuccess = apply << onRegistrationComplete
+                    , onError = always save
+                    }
+                )
+
+        FormMsg registerFormMsg ->
+            inRegisterForm
+                (Form.update registerFormMsg
+                    { onSubmit = handleSubmit
+                    }
+                )
+
+        WebsocketMsg string ->
+            save
+
+
+subscriptions : State -> Sub Msg
+subscriptions _ =
     Sub.none
 
 
-view state =
-    div
-        []
-        []
+view : State -> Html Msg
+view { form } =
+    Bulma.Columns.columns
+        { columnsModifiers | centered = True }
+        [ style "margin" "1.5em"
+        ]
+        [ Bulma.Columns.column
+            columnModifiers
+            [ class "is-half" ]
+            [ card []
+                [ cardContent []
+                    [ h3 [ class "title is-3" ] [ text "Register" ]
+                    , Html.map FormMsg (RegisterForm.view form)
+                    ]
+                ]
+            ]
+        ]
 
 
 
@@ -232,7 +322,7 @@ view state =
 --                        ]
 --
 --                Api.Error error ->
---                    resourceErrorMessage api.resource
+--                    requestErrorMessage api.resource
 --
 --                _ ->
 --                    Form.Register.view form disabled usernameStatus (toMsg << FormMsg)

@@ -2,15 +2,17 @@ module Page.NewPost exposing (Msg(..), State, init, subscriptions, update, view)
 
 import Bulma.Form exposing (controlInputModifiers, controlTextAreaModifiers)
 import Bulma.Modifiers exposing (..)
-import Burrito.Api as Api
+import Burrito.Api as Api exposing (..)
+import Burrito.Api.Json as JsonApi
 import Burrito.Callback exposing (..)
+import Burrito.Form2 as Form
 import Burrito.Update exposing (..)
 import Burrito.Update.Form as Form
 import Data.Post as Post exposing (Post)
-import Form.Field exposing (FieldValue(..))
-import Form.NewPost
+--import Form.Field exposing (FieldValue(..))
+import Form.NewPost as NewPostForm
 import Helpers exposing (..)
-import Helpers.Api exposing (resourceErrorMessage)
+import Helpers.Api exposing (requestErrorMessage)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -20,97 +22,105 @@ import Ui.Page
 
 
 type Msg
-    = NoMsg
-
-
-
---    = ApiMsg (Api.Msg Post)
---    | FormMsg Form.Msg
+    = ApiMsg (Api.Msg Post)
+    | FormMsg NewPostForm.Msg
 
 
 type alias State =
-    {}
+    { api : Api.Model Post
+    , form : NewPostForm.Model
+    }
 
 
+type alias StateUpdate a =
+    State -> Update State Msg a
 
---    { api : Api.Model Post
---    , formModel : Form.Model Never Form.NewPost.Fields
---    }
---inApi : Wrap State (Api.Model Post) Msg (Api.Msg Post) t
---inApi =
---    wrapModel .api (\state api -> { state | api = api }) ApiMsg
---
---
---inForm : Wrap State (Form.Model Never Form.NewPost.Fields) Msg Form.Msg t
---inForm =
---    wrapModel .formModel (\state form -> { state | formModel = form }) FormMsg
+
+insertAsApiIn : State -> Api.Model Post -> Update State msg a
+insertAsApiIn state api =
+    save { state | api = api }
+
+
+insertAsFormIn : State -> NewPostForm.Model -> Update State msg a
+insertAsFormIn state form =
+    save { state | form = form }
+
+
+inPostApi : Api.ModelUpdate Post (StateUpdate a) -> StateUpdate a
+inPostApi doUpdate state =
+    state.api
+        |> doUpdate
+        |> andThen (insertAsApiIn state)
+        |> mapCmd ApiMsg
+        |> runCallbacks
+
+
+inNewPostForm : NewPostForm.ModelUpdate (StateUpdate a) -> StateUpdate a
+inNewPostForm doUpdate state =
+    state.form
+        |> doUpdate
+        |> andThen (insertAsFormIn state)
+        |> mapCmd FormMsg
+        |> runCallbacks
 
 
 init : Update State Msg a
 init =
-    save {}
+    let
+        api =
+            JsonApi.init
+                { endpoint = "/posts"
+                , method = Api.HttpPost
+                , decoder = Json.field "post" Post.decoder
+                , headers = []
+                }
+    in
+    save State
+        |> andMap api
+        |> andMap NewPostForm.init
 
 
-
---    let
---        api =
---            Api.init
---                { endpoint = "/posts"
---                , method = Api.HttpPost
---                , decoder = Json.field "post" Post.decoder
---                }
---    in
---    save State
---        |> andMap api
---        |> andMap (Form.init [] Form.NewPost.validate)
---handleSubmit : Form.NewPost.Fields -> State -> Update State Msg a
---handleSubmit form =
---    let
---        json =
---            form |> Form.NewPost.toJson |> Http.jsonBody in
---    inApi (Api.sendRequest "" (Just json))
+handleSubmit : NewPostForm.Data -> StateUpdate a
+handleSubmit data =
+    let
+        json =
+            Http.jsonBody (NewPostForm.toJson data)
+    in
+    inPostApi (Api.sendRequest "" (Just json))
 
 
-update msg =
-    save
+update : Msg -> { onPostAdded : Post -> a } -> StateUpdate a
+update msg { onPostAdded } =
+    case msg of
+        ApiMsg apiMsg ->
+            inPostApi
+                (Api.update apiMsg
+                    { onSuccess = apply << onPostAdded
+                    , onError = always save
+                    }
+                )
+
+        FormMsg newPostFormMsg ->
+            inNewPostForm
+                (Form.update newPostFormMsg
+                    { onSubmit = handleSubmit
+                    }
+                )
 
 
-
---update : { onPostAdded : Post -> a } -> Msg -> State -> Update State Msg a
---update { onPostAdded } msg =
---    case msg of
---        ApiMsg apiMsg ->
---            inApi (Api.update { onSuccess = apply << onPostAdded, onError = always save } apiMsg)
---
---        FormMsg formMsg ->
---            inForm (Form.update { onSubmit = handleSubmit } formMsg)
-
-
-subscriptions state =
+subscriptions : State -> Sub Msg
+subscriptions _ =
     Sub.none
 
 
+view : State -> Html Msg
+view { api, form } =
+    Ui.Page.container "New post"
+        [ case api.resource of
+            Error error ->
+                requestErrorMessage error
 
---subscriptions : State -> (Msg -> msg) -> Sub msg
---subscriptions state toMsg =
---    Sub.none
-
-
-view state =
-    div
-        []
-        [ text "new post"
+            _ ->
+                text ""
+        , Html.map FormMsg (NewPostForm.view form)
         ]
-
-
-
---view : State -> (Msg -> msg) -> Html msg
---view { api, formModel } toMsg =
---    let
---        { form, disabled } =
---            formModel
---    in
---    Ui.Page.container "New post"
---        [ resourceErrorMessage api.resource
---        , Form.NewPost.view form disabled (toMsg << FormMsg)
---        ]

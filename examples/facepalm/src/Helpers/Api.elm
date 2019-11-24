@@ -1,16 +1,16 @@
-module Helpers.Api exposing (httpErrorToString, resourceErrorMessage)
+module Helpers.Api exposing (errorToString, requestErrorMessage)
 
 import Bulma.Components exposing (..)
 import Bulma.Modifiers exposing (..)
 import Burrito.Api as Api
-import Html exposing (..)
+import Html exposing (Html, text)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
 
 
-httpErrorToString : Http.Error -> String
-httpErrorToString error =
+errorToString : Http.Error -> String
+errorToString error =
     case error of
         Http.BadStatus 401 ->
             "Authentication failed."
@@ -25,13 +25,8 @@ httpErrorToString error =
             "Something went wrong!"
 
 
-resourceErrorMessage : Api.Resource a -> Html msg
-resourceErrorMessage resource =
-    case resource of
-        Api.Error error ->
-            message { messageModifiers | color = Danger }
-                []
-                [ messageBody [] [ text (error |> httpErrorToString) ] ]
-
-        _ ->
-            text ""
+requestErrorMessage : Http.Error -> Html msg
+requestErrorMessage error =
+    message { messageModifiers | color = Danger }
+        []
+        [ messageBody [] [ text (errorToString error) ] ]

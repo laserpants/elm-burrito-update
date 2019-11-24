@@ -1,12 +1,11 @@
-module Form.Register exposing (Fields, UsernameStatus(..), toJson, validate, validateChecked, validatePassword, validatePasswordConfirmation, view)
+module Form.Register exposing (..)
 
 import Bulma.Form exposing (controlCheckBox, controlEmail, controlHelp, controlInput, controlInputModifiers, controlLabel, controlPassword, controlPhone, controlTextArea, controlTextAreaModifiers)
 import Bulma.Modifiers exposing (..)
-import Form exposing (Form)
-import Form.Error exposing (Error, ErrorValue(..))
-import Form.Field exposing (Field, FieldValue(..))
-import Form.Register.Custom as Custom
-import Form.Validate as Validate exposing (Validation, andMap, andThen, customError, fail, field, minLength, oneOf, succeed)
+import Burrito.Form2 as Form exposing (Validate, checkbox, inputField)
+import Burrito.Form2.Validate as Validate
+import Burrito.Update exposing (Update)
+import Form.Error exposing (Error(..))
 import Helpers.Form exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -15,10 +14,22 @@ import Json.Decode as Json
 import Json.Encode as Encode
 
 
-type alias Fields =
+type Fields
+    = Name
+    | Email
+    | PhoneNumber
+    | Password
+    | PasswordConfirmation
+    | AgreeWithTerms
+
+
+type alias Msg =
+    Form.Msg Fields
+
+
+type alias Data =
     { name : String
     , email : String
-    , username : String
     , phoneNumber : String
     , password : String
     , passwordConfirmation : String
@@ -26,234 +37,133 @@ type alias Fields =
     }
 
 
-type UsernameStatus
-    = Blank
-    | IsAvailable Bool
-    | Unknown
-
-
-validatePassword : Field -> Result (Error e) String
-validatePassword =
-    validateStringNonEmpty
-        |> andThen (minLength 8)
-
-
-validatePasswordConfirmation : Field -> Result (Error Custom.Error) String
-validatePasswordConfirmation =
-    let
-        match password confirmation =
-            if password == confirmation then
-                succeed confirmation
-
-            else
-                fail (customError Custom.PasswordConfirmationMismatch)
-    in
-    [ Validate.string, Validate.emptyString ]
-        |> oneOf
-        |> field "password"
-        |> andThen
-            (\value ->
-                validateStringNonEmpty
-                    |> andThen (match value)
-                    |> field "passwordConfirmation"
-            )
-
-
-validateChecked : Field -> Result (Error Custom.Error) Bool
-validateChecked =
-    Validate.bool
-        |> andThen
-            (\checked ->
-                if checked then
-                    succeed True
-
-                else
-                    fail (customError Custom.MustAgreeWithTerms)
-            )
-
-
-validate : Validation Custom.Error Fields
-validate =
-    succeed Fields
-        |> andMap (field "name" validateStringNonEmpty)
-        |> andMap (field "email" validateEmail)
-        |> andMap (field "username" validateStringNonEmpty)
-        |> andMap (field "phoneNumber" validateStringNonEmpty)
-        |> andMap (field "password" validatePassword)
-        |> andMap validatePasswordConfirmation
-        |> andMap (field "agreeWithTerms" validateChecked)
-
-
-toJson : Fields -> Json.Value
-toJson { name, email, username, phoneNumber, password, agreeWithTerms } =
+toJson : Data -> Json.Value
+toJson { name, email, phoneNumber, password, agreeWithTerms } =
     Encode.object
         [ ( "name", Encode.string name )
         , ( "email", Encode.string email )
-        , ( "username", Encode.string username )
         , ( "phoneNumber", Encode.string phoneNumber )
         , ( "password", Encode.string password )
         , ( "agreeWithTerms", Encode.bool agreeWithTerms )
         ]
 
 
-view : Form Custom.Error Fields -> Bool -> UsernameStatus -> (Form.Msg -> msg) -> Html msg
-view form disabled usernameStatus toMsg =
+type alias Model =
+    Form.Model Fields Error Data
+
+
+type alias ModelUpdate a =
+    Form.ModelUpdate Fields Error Data a
+
+
+init : Update Model msg a
+init =
     let
-        info =
-            fieldInfo Custom.errorToString controlInputModifiers
-
-        name =
-            form |> Form.getFieldAsString "name" |> info
-
-        email =
-            form |> Form.getFieldAsString "email" |> info
-
-        phoneNumber =
-            form |> Form.getFieldAsString "phoneNumber" |> info
-
-        password =
-            form |> Form.getFieldAsString "password" |> info
-
-        passwordConfirmation =
-            form |> Form.getFieldAsString "passwordConfirmation" |> info
-
-        agreeWithTerms =
-            form |> Form.getFieldAsBool "agreeWithTerms" |> info
-
-        availableIcon =
-            ( Small, [], i [ class "fa fa-check has-text-success" ] [] )
-
-        unavailableIcon =
-            ( Small, [], i [ class "fa fa-times has-text-danger" ] [] )
-
-        username =
-            let
-                info_ =
-                    form |> Form.getFieldAsString "username" |> info
-            in
-            case usernameStatus of
-                IsAvailable True ->
-                    { info_ | modifiers = { controlInputModifiers | color = Success, iconRight = Just availableIcon } }
-
-                IsAvailable False ->
-                    { info_
-                        | modifiers = { controlInputModifiers | color = Danger, iconRight = Just unavailableIcon }
-                        , errorMessage = "This username is not available"
-                    }
-
-                _ ->
-                    info_
+        fields =
+            [ ( Name, inputField "" )
+            , ( Email, inputField "" )
+            , ( PhoneNumber, inputField "" )
+            , ( Password, inputField "" )
+            , ( PasswordConfirmation, inputField "" )
+            , ( AgreeWithTerms, checkbox False )
+            ]
     in
-    [ fieldset [ Html.Attributes.disabled disabled ]
-        [ Bulma.Form.field []
-            [ controlLabel [] [ text "Name" ]
-            , controlInput name.modifiers
-                []
-                [ placeholder "Name"
-                , onFocus (Form.Focus name.path)
-                , onBlur (Form.Blur name.path)
-                , onInput (String >> Form.Input name.path Form.Text)
-                , value (Maybe.withDefault "" name.value)
-                ]
-                []
-            , controlHelp Danger [] [ Html.text name.errorMessage ]
-            ]
-        , Bulma.Form.field []
-            [ controlLabel [] [ text "Email" ]
-            , controlEmail email.modifiers
-                []
-                [ placeholder "Email"
-                , onFocus (Form.Focus email.path)
-                , onBlur (Form.Blur email.path)
-                , onInput (String >> Form.Input email.path Form.Text)
-                , value (Maybe.withDefault "" email.value)
-                ]
-                []
-            , controlHelp Danger [] [ Html.text email.errorMessage ]
-            ]
-        , Bulma.Form.field []
-            [ controlLabel [] [ text "Username" ]
-            , controlInput username.modifiers
-                (if Unknown == usernameStatus then
-                    [ class "is-loading" ]
+    Form.init validate fields
 
-                 else
-                    []
-                )
-                [ placeholder "Username"
-                , onFocus (Form.Focus username.path)
-                , onBlur (Form.Blur username.path)
-                , onInput (String >> Form.Input username.path Form.Text)
-                , value (Maybe.withDefault "" username.value)
-                ]
-                []
-            , controlHelp Danger [] [ Html.text username.errorMessage ]
-            ]
-        , Bulma.Form.field []
-            [ controlLabel [] [ text "Phone number" ]
-            , controlPhone phoneNumber.modifiers
-                []
-                [ placeholder "Phone number"
-                , onFocus (Form.Focus phoneNumber.path)
-                , onBlur (Form.Blur phoneNumber.path)
-                , onInput (String >> Form.Input phoneNumber.path Form.Text)
-                , value (Maybe.withDefault "" phoneNumber.value)
-                ]
-                []
-            , controlHelp Danger [] [ Html.text phoneNumber.errorMessage ]
-            ]
-        , Bulma.Form.field []
-            [ controlLabel [] [ text "Password" ]
-            , controlPassword password.modifiers
-                []
-                [ placeholder "Password"
-                , onFocus (Form.Focus password.path)
-                , onBlur (Form.Blur password.path)
-                , onInput (String >> Form.Input password.path Form.Text)
-                , value (Maybe.withDefault "" password.value)
-                ]
-                []
-            , controlHelp Danger [] [ Html.text password.errorMessage ]
-            ]
-        , Bulma.Form.field []
-            [ controlLabel [] [ text "Password confirmation" ]
-            , controlPassword passwordConfirmation.modifiers
-                []
-                [ placeholder "Password confirmation"
-                , onFocus (Form.Focus passwordConfirmation.path)
-                , onBlur (Form.Blur passwordConfirmation.path)
-                , onInput (String >> Form.Input passwordConfirmation.path Form.Text)
-                , value (Maybe.withDefault "" passwordConfirmation.value)
-                ]
-                []
-            , controlHelp Danger [] [ Html.text passwordConfirmation.errorMessage ]
-            ]
-        , Bulma.Form.field []
-            [ controlCheckBox False
-                []
-                []
-                [ onFocus (Form.Focus agreeWithTerms.path)
-                , onBlur (Form.Blur agreeWithTerms.path)
-                , onCheck (Bool >> Form.Input agreeWithTerms.path Form.Checkbox)
-                , checked (Maybe.withDefault False agreeWithTerms.value)
-                ]
-                [ text "I agree with terms and conditions" ]
-            , controlHelp Danger [] [ Html.text agreeWithTerms.errorMessage ]
-            ]
-        , Bulma.Form.field []
-            [ div [ class "control" ]
-                [ button [ type_ "submit", class "button is-primary" ]
-                    [ text
-                        (if disabled then
-                            "Please wait"
 
-                         else
-                            "Send"
-                        )
+validate : Validate Fields Error Data
+validate =
+    let
+        validateName =
+            Validate.stringNotEmpty MustNotBeEmpty
+
+        validateEmail =
+            Validate.stringNotEmpty MustNotBeEmpty
+                |> Validate.andThen (Validate.email MustBeValidEmail)
+
+        validatePhoneNumber =
+            Validate.stringNotEmpty MustNotBeEmpty
+
+        validatePassword =
+            Validate.stringNotEmpty MustNotBeEmpty
+                |> Validate.andThen (Validate.atLeastLength 8 PasswordTooShort)
+
+        validatePasswordConfirmation =
+            Validate.stringNotEmpty MustNotBeEmpty
+                |> Validate.andThen (Validate.mustMatchField Password MustMatchPassword)
+
+        validateAgreeWithTerms =
+            Validate.mustBeChecked MustAgreeWithTerms
+    in
+    Validate.record Data
+        |> Validate.inputField Name validateName
+        |> Validate.inputField Email validateEmail
+        |> Validate.inputField PhoneNumber validatePhoneNumber
+        |> Validate.inputField Password validatePassword
+        |> Validate.inputField PasswordConfirmation validatePasswordConfirmation
+        |> Validate.checkbox AgreeWithTerms validateAgreeWithTerms
+
+
+view : Model -> Html Msg
+view { fields, disabled, submitted } =
+    Form.lookup6 fields
+        Name
+        Email
+        PhoneNumber
+        Password
+        PasswordConfirmation
+        AgreeWithTerms
+        (\name email phoneNumber password passwordConfirmation agreeWithTerms ->
+            [ fieldset
+                [ Html.Attributes.disabled disabled ]
+                [ Bulma.Form.field []
+                    [ controlLabel [] [ text "Name" ]
+                    , controlInput_ Name name "Name"
+                    , controlErrorHelp name
+                    ]
+                , Bulma.Form.field []
+                    [ controlLabel [] [ text "Email" ]
+                    , controlInput_ Email email "Email"
+                    , controlErrorHelp email
+                    ]
+                , Bulma.Form.field []
+                    [ controlLabel [] [ text "Phone number" ]
+                    , controlInput_ PhoneNumber phoneNumber "Phone number"
+                    , controlErrorHelp phoneNumber
+                    ]
+                , Bulma.Form.field []
+                    [ controlLabel [] [ text "Password" ]
+                    , controlPassword_ Password password "Password"
+                    , controlErrorHelp password
+                    ]
+                , Bulma.Form.field []
+                    [ controlLabel [] [ text "Confirm password" ]
+                    , controlPassword_ PasswordConfirmation passwordConfirmation "Confirm password"
+                    , controlErrorHelp passwordConfirmation
+                    ]
+                , Bulma.Form.field []
+                    [ controlCheckBox False
+                        []
+                        (Form.checkboxAttrs AgreeWithTerms agreeWithTerms)
+                        []
+                        [ text "I agree with terms and conditions" ]
+                    , controlErrorHelp agreeWithTerms
+                    ]
+                , Bulma.Form.field []
+                    [ div [ class "control" ]
+                        [ button
+                            [ class "button is-primary" ]
+                            [ text
+                                (if disabled then
+                                    "Please wait"
+
+                                 else
+                                    "Send"
+                                )
+                            ]
+                        ]
                     ]
                 ]
             ]
-        ]
-    ]
-        |> Html.form [ onSubmit Form.Submit ]
-        |> Html.map toMsg
+                |> Html.form [ onSubmit Form.Submit ]
+        )
