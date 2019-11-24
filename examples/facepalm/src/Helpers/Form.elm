@@ -3,10 +3,7 @@ module Helpers.Form exposing (..)
 import Bulma.Components exposing (..)
 import Bulma.Form exposing (controlCheckBox, controlHelp, controlInput, controlInputModifiers, controlLabel, controlPassword, controlTextArea, controlTextAreaModifiers)
 import Bulma.Modifiers exposing (..)
-import Burrito.Form2 as Form
---import Form.Error exposing (Error, ErrorValue(..))
---import Form.Field exposing (Field, FieldValue(..))
---import Form.Validate as Validate exposing (andThen, oneOf)
+import Burrito.Form as Form
 import Form.Error as Error
 import Html exposing (text)
 import Html.Attributes exposing (..)
@@ -22,7 +19,7 @@ controlErrorHelp =
     Maybe.withDefault (text "") << Maybe.map errorHelp << Form.fieldError
 
 
-control_ input tag field ph =
+control__ ctrlAttrs inputAttrs children input tag field ph =
     let
         error =
             Form.fieldError field
@@ -38,17 +35,17 @@ control_ input tag field ph =
             }
 
         attributes =
-            [ placeholder ph ] ++ Form.inputAttrs tag field
+            inputAttrs ++ [ placeholder ph ] ++ Form.inputAttrs tag field
     in
-    input modifiers [] attributes []
+    input modifiers ctrlAttrs attributes children
 
 
 controlInput_ =
-    control_ controlInput
+    control__ [] [] [] controlInput
 
 
 controlPassword_ =
-    control_ controlPassword
+    control__ [] [] [] controlPassword
 
 
 controlTextArea_ tag field ph =
@@ -77,8 +74,6 @@ controlTextArea_ tag field ph =
 --    Maybe.withDefault (text "") (Maybe.map errorHelp (Form.fieldError field submitted))
 --
 --
-
-
 --validateStringNonEmpty : Field -> Result (Error e) String
 --validateStringNonEmpty =
 --    [ Validate.string, Validate.emptyString ]

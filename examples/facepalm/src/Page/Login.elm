@@ -7,11 +7,12 @@ import Bulma.Modifiers exposing (..)
 import Burrito.Api as Api exposing (..)
 import Burrito.Api.Json as JsonApi
 import Burrito.Callback exposing (..)
-import Burrito.Form2 as Form exposing (Variant(..))
+import Burrito.Form as Form exposing (Variant(..))
 import Burrito.Update exposing (..)
 import Data.Session as Session exposing (Session)
-import Form.Login as LoginForm exposing (Fields(..))
 import Form.Error as Error
+import Form.Login as LoginForm exposing (Fields(..))
+import Helpers exposing (empty)
 import Helpers.Api exposing (..)
 import Helpers.Form exposing (..)
 import Html exposing (..)
@@ -142,7 +143,7 @@ view { api, form } =
                             requestErrorMessage error
 
                         _ ->
-                            text ""
+                            empty
                     , Html.map FormMsg (LoginForm.view form)
                     ]
                 ]

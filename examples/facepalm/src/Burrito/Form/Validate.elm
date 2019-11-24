@@ -1,6 +1,6 @@
-module Burrito.Form2.Validate exposing (..)
+module Burrito.Form.Validate exposing (..)
 
-import Burrito.Form2 exposing (Field, FieldList, Status(..), Variant(..), asBool, asString, lookupField)
+import Burrito.Form exposing (Field, FieldList, Status(..), Variant(..), asBool, asString, lookupField)
 import Regex exposing (Regex)
 
 

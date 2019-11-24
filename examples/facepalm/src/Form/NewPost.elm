@@ -1,11 +1,12 @@
 module Form.NewPost exposing (..)
 
+--import Form.Field exposing (FieldValue(..))
+
 import Bulma.Form exposing (controlEmail, controlHelp, controlInput, controlInputModifiers, controlLabel, controlTextArea, controlTextAreaModifiers)
 import Bulma.Modifiers exposing (..)
-import Burrito.Form2 as Form exposing (Validate, checkbox, inputField)
-import Burrito.Form2.Validate as Validate
+import Burrito.Form as Form exposing (Validate, checkbox, inputField)
+import Burrito.Form.Validate as Validate
 import Burrito.Update exposing (Update)
---import Form.Field exposing (FieldValue(..))
 import Form.Error exposing (Error(..))
 import Helpers.Form exposing (..)
 import Html exposing (..)

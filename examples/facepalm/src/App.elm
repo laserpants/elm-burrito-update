@@ -411,14 +411,21 @@ pageView page =
 
 
 view : State -> Document Msg
-view ({ page, session, ui } as state) =
+
+
+
+--view ({ page, session, ui } as state) =
+
+
+view { page, session, ui } =
     { title = "Welcome to Facepalm"
     , body =
         [ Bulma.Layout.section NotSpaced
             []
             [ Html.map UiMsg (Ui.navbar ui session)
             , Html.map PageMsg (pageView page)
-            , text (Debug.toString state)
+
+            --            , text (Debug.toString state)
             ]
         ]
     }

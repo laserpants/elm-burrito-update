@@ -5,6 +5,7 @@ import Bulma.Elements exposing (..)
 import Bulma.Modifiers exposing (..)
 import Burrito.Update exposing (..)
 import Data.Session exposing (Session)
+import Helpers exposing (empty)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -115,7 +116,7 @@ toastMessage : State -> Html Msg
 toastMessage { toast } =
     case toast of
         Nothing ->
-            text ""
+            empty
 
         Just ( id, { message, color } ) ->
             let

@@ -8,6 +8,7 @@ type Error
     | MustAgreeWithTerms
     | MustMatchPassword
     | PasswordTooShort
+    | UsernameTaken
 
 
 toString : Error -> String
@@ -30,3 +31,6 @@ toString error =
 
         PasswordTooShort ->
             "The password must be at least eight characters long"
+
+        UsernameTaken ->
+            "This username is already taken"

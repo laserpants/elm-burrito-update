@@ -2,8 +2,8 @@ module Form.Register exposing (..)
 
 import Bulma.Form exposing (controlCheckBox, controlEmail, controlHelp, controlInput, controlInputModifiers, controlLabel, controlPassword, controlPhone, controlTextArea, controlTextAreaModifiers)
 import Bulma.Modifiers exposing (..)
-import Burrito.Form2 as Form exposing (Validate, checkbox, inputField)
-import Burrito.Form2.Validate as Validate
+import Burrito.Form as Form exposing (Validate, checkbox, inputField)
+import Burrito.Form.Validate as Validate
 import Burrito.Update exposing (Update)
 import Form.Error exposing (Error(..))
 import Helpers.Form exposing (..)
@@ -17,6 +17,7 @@ import Json.Encode as Encode
 type Fields
     = Name
     | Email
+    | Username
     | PhoneNumber
     | Password
     | PasswordConfirmation
@@ -36,6 +37,7 @@ type UsernameStatus
 type alias Data =
     { name : String
     , email : String
+    , username : String
     , phoneNumber : String
     , password : String
     , passwordConfirmation : String
@@ -44,10 +46,11 @@ type alias Data =
 
 
 toJson : Data -> Json.Value
-toJson { name, email, phoneNumber, password, agreeWithTerms } =
+toJson { name, email, username, phoneNumber, password, agreeWithTerms } =
     Encode.object
         [ ( "name", Encode.string name )
         , ( "email", Encode.string email )
+        , ( "username", Encode.string username )
         , ( "phoneNumber", Encode.string phoneNumber )
         , ( "password", Encode.string password )
         , ( "agreeWithTerms", Encode.bool agreeWithTerms )
@@ -55,11 +58,11 @@ toJson { name, email, phoneNumber, password, agreeWithTerms } =
 
 
 type alias Model =
-    Form.Model Fields Error Data
+    Form.ModelExtra Fields Error Data UsernameStatus
 
 
 type alias ModelUpdate a =
-    Form.ModelUpdate Fields Error Data a
+    Form.ModelExtraUpdate Fields Error Data UsernameStatus a
 
 
 init : Update Model msg a
@@ -68,21 +71,35 @@ init =
         fields =
             [ ( Name, inputField "" )
             , ( Email, inputField "" )
+            , ( Username, inputField "" )
             , ( PhoneNumber, inputField "" )
             , ( Password, inputField "" )
             , ( PasswordConfirmation, inputField "" )
             , ( AgreeWithTerms, checkbox False )
             ]
     in
-    Form.init validate fields
+    Form.initExtra validate fields Blank
 
 
-validate : Validate Fields Error Data
-validate =
+validate : UsernameStatus -> Validate Fields Error Data
+validate usernameStatus =
     let
         validateEmail =
             Validate.stringNotEmpty MustNotBeEmpty
                 |> Validate.andThen (Validate.email MustBeValidEmail)
+
+        validateUsername =
+            Validate.stringNotEmpty MustNotBeEmpty
+                |> Validate.andThen
+                    (always
+                        << (case usernameStatus of
+                                IsAvailable available ->
+                                    always (Err UsernameTaken)
+
+                                _ ->
+                                    Ok
+                           )
+                    )
 
         validatePassword =
             Validate.stringNotEmpty MustNotBeEmpty
@@ -95,6 +112,7 @@ validate =
     Validate.record Data
         |> Validate.inputField Name (Validate.stringNotEmpty MustNotBeEmpty)
         |> Validate.inputField Email validateEmail
+        |> Validate.inputField Username validateUsername
         |> Validate.inputField PhoneNumber (Validate.stringNotEmpty MustNotBeEmpty)
         |> Validate.inputField Password validatePassword
         |> Validate.inputField PasswordConfirmation validatePasswordConfirmation
@@ -102,15 +120,16 @@ validate =
 
 
 view : Model -> Html Msg
-view { fields, disabled, submitted } =
-    Form.lookup6 fields
+view { fields, disabled, state } =
+    Form.lookup7 fields
         Name
         Email
+        Username
         PhoneNumber
         Password
         PasswordConfirmation
         AgreeWithTerms
-        (\name email phoneNumber password passwordConfirmation agreeWithTerms ->
+        (\name email username phoneNumber password passwordConfirmation agreeWithTerms ->
             [ fieldset
                 [ Html.Attributes.disabled disabled ]
                 [ Bulma.Form.field []
@@ -122,6 +141,23 @@ view { fields, disabled, submitted } =
                     [ controlLabel [] [ text "Email" ]
                     , controlInput_ Email email "Email"
                     , controlErrorHelp email
+                    ]
+                , Bulma.Form.field []
+                    [ controlLabel [] [ text "Username" ]
+                    , control__
+                        (if Unknown == state then
+                            [ class "is-loading" ]
+
+                         else
+                            []
+                        )
+                        []
+                        []
+                        controlInput
+                        Username
+                        username
+                        "Username"
+                    , controlErrorHelp username
                     ]
                 , Bulma.Form.field []
                     [ controlLabel [] [ text "Phone number" ]

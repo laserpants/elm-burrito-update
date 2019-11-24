@@ -5,11 +5,10 @@ import Bulma.Modifiers exposing (..)
 import Burrito.Api as Api exposing (..)
 import Burrito.Api.Json as JsonApi
 import Burrito.Callback exposing (..)
-import Burrito.Form2 as Form
+import Burrito.Form as Form
 import Burrito.Update exposing (..)
 import Burrito.Update.Form as Form
 import Data.Post as Post exposing (Post)
---import Form.Field exposing (FieldValue(..))
 import Form.NewPost as NewPostForm
 import Helpers exposing (..)
 import Helpers.Api exposing (requestErrorMessage)
@@ -121,6 +120,6 @@ view { api, form } =
                 requestErrorMessage error
 
             _ ->
-                text ""
+                empty
         , Html.map FormMsg (NewPostForm.view form)
         ]

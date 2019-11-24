@@ -3,8 +3,8 @@ module Form.Login exposing (..)
 import Bulma.Components exposing (..)
 import Bulma.Form exposing (controlCheckBox, controlHelp, controlInput, controlInputModifiers, controlLabel, controlPassword, controlTextArea, controlTextAreaModifiers)
 import Bulma.Modifiers exposing (..)
-import Burrito.Form2 as Form exposing (Validate, checkbox, inputField)
-import Burrito.Form2.Validate as Validate
+import Burrito.Form as Form exposing (Validate, checkbox, inputField)
+import Burrito.Form.Validate as Validate
 import Burrito.Update exposing (Update)
 import Form.Error exposing (Error(..))
 import Helpers.Form exposing (..)

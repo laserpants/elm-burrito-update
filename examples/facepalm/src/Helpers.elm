@@ -1,14 +1,18 @@
 module Helpers exposing (..)
 
-import Burrito.Callback exposing (..)
-import Burrito.Update exposing (..)
+--import Burrito.Callback exposing (..)
+--import Burrito.Update exposing (..)
+
+import Html exposing (..)
 
 
-type alias Wrap state state1 msg msg1 t =
-    (state1 -> Update state1 msg1 (state -> Update state msg t)) -> state -> Update state msg t
+empty =
+    text ""
 
 
 
+--type alias Wrap state state1 msg msg1 t =
+--    (state1 -> Update state1 msg1 (state -> Update state msg t)) -> state -> Update state msg t
 --wrapModel :
 --    (c -> a)
 --    -> (c -> a -> b)

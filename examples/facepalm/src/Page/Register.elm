@@ -1,4 +1,6 @@
-module Page.Register exposing (Msg(..), State, init, subscriptions, update, view)
+module Page.Register exposing (..)
+
+--Msg(..), State, init, subscriptions, update, view)
 
 import Bulma.Columns exposing (columnModifiers, columnsModifiers, narrowColumnModifiers)
 import Bulma.Components exposing (..)
@@ -7,10 +9,10 @@ import Bulma.Modifiers exposing (..)
 import Burrito.Api as Api exposing (Resource(..))
 import Burrito.Api.Json as JsonApi
 import Burrito.Callback exposing (..)
-import Burrito.Form2 as Form exposing (Variant(..))
+import Burrito.Form as Form exposing (Variant(..))
 import Burrito.Update exposing (..)
 import Data.User as User exposing (User)
-import Dict exposing (Dict)
+import Data.Websocket.UsernameAvailableResponse as UsernameAvailableResponse exposing (UsernameAvailableResponse)
 import Form.Register as RegisterForm exposing (Fields(..), UsernameStatus(..))
 import Helpers exposing (..)
 import Helpers.Api exposing (requestErrorMessage)
@@ -21,6 +23,26 @@ import Http
 import Json.Decode as Json
 import Json.Encode as Encode
 import Ports
+import Set exposing (Set)
+
+
+type WebSocketMessage
+    = WebSocketUsernameAvailableResponse UsernameAvailableResponse
+
+
+websocketMessageDecoder : Json.Decoder WebSocketMessage
+websocketMessageDecoder =
+    let
+        payloadDecoder messageType =
+            case messageType of
+                "username_available_response" ->
+                    Json.map WebSocketUsernameAvailableResponse UsernameAvailableResponse.decoder
+
+                _ ->
+                    Json.fail "Unrecognized message type"
+    in
+    Json.field "type" Json.string
+        |> Json.andThen payloadDecoder
 
 
 type Msg
@@ -32,8 +54,7 @@ type Msg
 type alias State =
     { api : Api.Model User
     , form : RegisterForm.Model
-    , usernames : Dict String Bool
-    , usernameStatus : UsernameStatus
+    , takenUsernames : Set String
     }
 
 
@@ -49,6 +70,16 @@ insertAsApiIn state api =
 insertAsFormIn : State -> RegisterForm.Model -> Update State msg a
 insertAsFormIn state form =
     save { state | form = form }
+
+
+setUsernameTaken : String -> StateUpdate a
+setUsernameTaken username state =
+    save { state | takenUsernames = Set.insert username state.takenUsernames }
+
+
+setUsernameStatus : UsernameStatus -> StateUpdate a
+setUsernameStatus status =
+    inRegisterForm (Form.setState status)
 
 
 inRegisterApi : Api.ModelUpdate User (StateUpdate a) -> StateUpdate a
@@ -83,8 +114,7 @@ init =
     save State
         |> andMap api
         |> andMap RegisterForm.init
-        |> andMap (save Dict.empty)
-        |> andMap (save Blank)
+        |> andMap (save Set.empty)
 
 
 handleSubmit : RegisterForm.Data -> StateUpdate a
@@ -94,6 +124,45 @@ handleSubmit data =
             Http.jsonBody (RegisterForm.toJson data)
     in
     inRegisterApi (Api.sendRequest "" (Just json))
+
+
+websocketIsAvailableQuery : String -> Json.Value
+websocketIsAvailableQuery username =
+    Encode.object
+        [ ( "type", Encode.string "username_available_query" )
+        , ( "username", Encode.string username )
+        ]
+
+
+usernameFieldValue : Form.FieldList RegisterForm.Fields err -> String
+usernameFieldValue =
+    Form.lookupField Username
+        >> Maybe.map (Form.asString << .value)
+        >> Maybe.withDefault ""
+
+
+checkUsernameAvailability : StateUpdate a
+checkUsernameAvailability =
+    using
+        (\{ form, takenUsernames } ->
+            let
+                queryName name =
+                    if String.isEmpty name then
+                        setUsernameStatus Blank
+
+                    else if Set.member name takenUsernames then
+                        setUsernameStatus (IsAvailable False)
+
+                    else
+                        let
+                            encodedMsg =
+                                Encode.encode 0 (websocketIsAvailableQuery name)
+                        in
+                        setUsernameStatus Unknown
+                            >> andAddCmd (Ports.websocketOut encodedMsg)
+            in
+            queryName (usernameFieldValue form.fields)
+        )
 
 
 update : Msg -> { onRegistrationComplete : User -> a } -> StateUpdate a
@@ -113,14 +182,35 @@ update msg { onRegistrationComplete } =
                     { onSubmit = handleSubmit
                     }
                 )
+                >> andThen checkUsernameAvailability
 
-        WebsocketMsg string ->
-            save
+        WebsocketMsg websocketMsg ->
+            case Json.decodeString websocketMessageDecoder websocketMsg of
+                Ok (WebSocketUsernameAvailableResponse { username, available }) ->
+                    using
+                        (\{ form } ->
+                            (if username == usernameFieldValue form.fields then
+                                setUsernameStatus (IsAvailable available)
+
+                             else
+                                save
+                            )
+                                >> andThen
+                                    (if not available then
+                                        setUsernameTaken username
+
+                                     else
+                                        save
+                                    )
+                        )
+
+                _ ->
+                    save
 
 
 subscriptions : State -> Sub Msg
 subscriptions _ =
-    Sub.none
+    Ports.websocketIn WebsocketMsg
 
 
 view : State -> Html Msg

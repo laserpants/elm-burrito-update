@@ -1,4 +1,4 @@
-module Burrito.Form2 exposing (..)
+module Burrito.Form exposing (..)
 
 import Burrito.Callback exposing (..)
 import Burrito.Update exposing (..)
@@ -114,24 +114,37 @@ type alias Validate field err data =
     -> ( FieldList field err, Maybe data, Maybe field )
 
 
-type alias Model field err data =
+type alias ModelExtra field err data state =
     { fields : FieldList field err
     , initial : FieldList field err
-    , validate : Validate field err data
+    , validate : state -> Validate field err data
     , disabled : Bool
     , submitted : Bool
+    , state : state
     }
 
 
+type alias Model field err data =
+    ModelExtra field err data ()
+
+
+type alias ModelExtraUpdate field err data state a =
+    ModelExtra field err data state -> Update (ModelExtra field err data state) (Msg field) a
+
+
 type alias ModelUpdate field err data a =
-    Model field err data -> Update (Model field err data) (Msg field) a
+    ModelExtraUpdate field err data () a
 
 
 insertAsFieldsIn :
-    Model field err data
+    ModelExtra field err data state
     -> FieldList field err
-    -> Update (Model field err data) msg a
+    -> Update (ModelExtra field err data state) msg a
 insertAsFieldsIn model fields =
+    save { model | fields = fields }
+
+
+setFields fields model =
     save { model | fields = fields }
 
 
@@ -153,12 +166,12 @@ applyToField target fun =
         )
 
 
-setSubmitted : Bool -> ModelUpdate field error data a
+setSubmitted : Bool -> ModelExtraUpdate field error data state a
 setSubmitted submitted model =
     save { model | submitted = submitted }
 
 
-setDisabled : Bool -> ModelUpdate field error data a
+setDisabled : Bool -> ModelExtraUpdate field error data state a
 setDisabled disabled model =
     save { model | disabled = disabled }
 
@@ -181,6 +194,27 @@ lookupField target fields =
     rec fields
 
 
+setState : state -> ModelExtraUpdate field error data state a
+setState state model =
+    save { model | state = state }
+
+
+initExtra :
+    (state -> Validate field err data)
+    -> FieldList field err
+    -> state
+    -> Update (ModelExtra field err data state) msg a
+initExtra validate fields state =
+    save
+        { fields = fields
+        , initial = fields
+        , validate = validate
+        , disabled = False
+        , submitted = False
+        , state = state
+        }
+
+
 init :
     Validate field err data
     -> FieldList field err
@@ -189,13 +223,14 @@ init validate fields =
     save
         { fields = fields
         , initial = fields
-        , validate = validate
+        , validate = always validate
         , disabled = False
         , submitted = False
+        , state = ()
         }
 
 
-reset : Model field err data -> Update (Model field err data) msg a
+reset : ModelExtra field err data state -> Update (ModelExtra field err data state) msg a
 reset model =
     save
         { model
@@ -205,55 +240,58 @@ reset model =
         }
 
 
-update : Msg field -> { onSubmit : data -> a } -> ModelUpdate field err data a
-update msg { onSubmit } model =
-    model.fields
-        |> (case msg of
-                Submit ->
-                    List.map
-                        (Tuple.mapSecond
-                            (\field ->
-                                { field | dirty = True, submitted = True }
-                            )
-                        )
-                        >> model.validate Nothing
-
-                Input target value ->
-                    applyToField target
-                        (\field ->
-                            { field | value = value, dirty = True }
-                        )
-                        >> model.validate (Just target)
-
-                Blur target ->
-                    applyToField target
-                        (\field ->
-                            { field | dirty = False }
-                        )
-                        >> model.validate (Just target)
-
-                Focus target ->
-                    \fields -> ( fields, Nothing, Nothing )
-           )
-        |> (\( fields, maybeData, _ ) ->
-                insertAsFieldsIn model fields
-                    |> andThen
-                        (if Submit == msg then
-                            setSubmitted True
-                                >> andThen
-                                    (case maybeData of
-                                        Just data ->
-                                            setDisabled True
-                                                >> andApply (onSubmit data)
-
-                                        Nothing ->
-                                            save
+update : Msg field -> { onSubmit : data -> a } -> ModelExtraUpdate field err data state a
+update msg { onSubmit } =
+    using
+        (\{ fields, validate, state } ->
+            fields
+                |> (case msg of
+                        Submit ->
+                            List.map
+                                (Tuple.mapSecond
+                                    (\field ->
+                                        { field | dirty = True, submitted = True }
                                     )
+                                )
+                                >> validate state Nothing
 
-                         else
-                            save
-                        )
-           )
+                        Input target value ->
+                            applyToField target
+                                (\field ->
+                                    { field | value = value, dirty = True }
+                                )
+                                >> validate state (Just target)
+
+                        Blur target ->
+                            applyToField target
+                                (\field ->
+                                    { field | dirty = False }
+                                )
+                                >> validate state (Just target)
+
+                        Focus target ->
+                            \fields_ -> ( fields_, Nothing, Nothing )
+                   )
+                |> (\( fields_, maybeData, _ ) ->
+                        setFields fields_
+                            >> andThen
+                                (if Submit == msg then
+                                    setSubmitted True
+                                        >> andThen
+                                            (case maybeData of
+                                                Just data ->
+                                                    setDisabled True
+                                                        >> andApply (onSubmit data)
+
+                                                Nothing ->
+                                                    save
+                                            )
+
+                                 else
+                                    save
+                                )
+                   )
+        )
 
 
 lookup2 :
@@ -343,4 +381,28 @@ lookup6 fields f1 f2 f3 f4 f5 f6 fun =
             |> Maybe.andMap (lookupField f4 fields)
             |> Maybe.andMap (lookupField f5 fields)
             |> Maybe.andMap (lookupField f6 fields)
+        )
+
+
+lookup7 :
+    FieldList field err
+    -> field
+    -> field
+    -> field
+    -> field
+    -> field
+    -> field
+    -> field
+    -> (Field err -> Field err -> Field err -> Field err -> Field err -> Field err -> Field err -> Html msg)
+    -> Html msg
+lookup7 fields f1 f2 f3 f4 f5 f6 f7 fun =
+    Maybe.withDefault (text "")
+        (Just fun
+            |> Maybe.andMap (lookupField f1 fields)
+            |> Maybe.andMap (lookupField f2 fields)
+            |> Maybe.andMap (lookupField f3 fields)
+            |> Maybe.andMap (lookupField f4 fields)
+            |> Maybe.andMap (lookupField f5 fields)
+            |> Maybe.andMap (lookupField f6 fields)
+            |> Maybe.andMap (lookupField f7 fields)
         )

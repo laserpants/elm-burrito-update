@@ -5,7 +5,7 @@ import Bulma.Modifiers exposing (..)
 import Burrito.Api as Api exposing (Resource(..))
 import Burrito.Api.Json as JsonApi
 import Burrito.Callback exposing (..)
-import Burrito.Form2 as Form exposing (Variant(..))
+import Burrito.Form as Form exposing (Variant(..))
 import Burrito.Update exposing (..)
 import Data.Comment as Comment exposing (Comment)
 import Data.Post as Post exposing (Post)
@@ -218,7 +218,7 @@ view { postApi, commentApi, commentForm } =
                             requestErrorMessage error
 
                         _ ->
-                            text ""
+                            empty
                     , Html.map CommentFormMsg (CommentForm.view commentForm)
                     ]
 
