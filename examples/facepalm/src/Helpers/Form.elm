@@ -25,18 +25,12 @@ control :
     a
     -> List (Attribute (Msg field))
     -> b
-    ->
-        (ControlInputModifiers msg
-         -> a
-         -> List (Attribute (Msg field))
-         -> b
-         -> Control (Msg field)
-        )
+    -> (ControlInputModifiers msg -> a -> List (Attribute (Msg field)) -> b -> Control (Msg field))
     -> field
     -> Field err
     -> String
     -> Control (Msg field)
-control ctrlAttrs inputAttrs children input tag field ph =
+control ctrlAttrs inputAttrs children input tag field placeholder =
     let
         error =
             Form.fieldError field
@@ -52,7 +46,7 @@ control ctrlAttrs inputAttrs children input tag field ph =
             }
 
         attributes =
-            placeholder ph :: inputAttrs ++ Form.inputAttrs tag field
+            Html.Attributes.placeholder placeholder :: inputAttrs ++ Form.inputAttrs tag field
     in
     input modifiers ctrlAttrs attributes children
 
@@ -68,7 +62,7 @@ controlPassword =
 
 
 controlTextArea : field -> Field err -> String -> Control (Msg field)
-controlTextArea tag field ph =
+controlTextArea tag field placeholder =
     let
         error =
             Form.fieldError field
@@ -84,6 +78,6 @@ controlTextArea tag field ph =
             }
 
         attributes =
-            placeholder ph :: Form.inputAttrs tag field
+            Html.Attributes.placeholder placeholder :: Form.inputAttrs tag field
     in
     Bulma.Form.controlTextArea modifiers [] attributes []
