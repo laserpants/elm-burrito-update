@@ -117,7 +117,10 @@ toastMessage { toast } =
         Just ( id, { message, color } ) ->
             let
                 notification =
-                    notificationWithDelete color [] (DismissToast id) [ text message ]
+                    notificationWithDelete color
+                        []
+                        (DismissToast id)
+                        [ text message ]
             in
             Ui.Toast.container notification
 
