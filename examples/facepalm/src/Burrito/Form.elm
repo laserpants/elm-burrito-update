@@ -136,15 +136,6 @@ type alias ModelUpdate field err data a =
     ModelExtraUpdate field err data () a
 
 
-
---insertAsFieldsIn :
---    ModelExtra field err data state
---    -> FieldList field err
---    -> Update (ModelExtra field err data state) msg a
---insertAsFieldsIn model fields =
---    save { model | fields = fields }
-
-
 setFields :
     FieldList field err
     -> ModelExtra field err data state

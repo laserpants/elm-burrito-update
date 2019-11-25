@@ -330,7 +330,7 @@ handleCommentCreated : Comment -> StateUpdate a
 handleCommentCreated comment =
     inUi
         (Ui.showToast
-            { message = "You have been logged out.", color = Info }
+            { message = "Your comment has been received.", color = Info }
         )
 
 
@@ -406,7 +406,8 @@ view : State -> Document Msg
 view { page, session, ui } =
     { title = "Welcome to Facepalm"
     , body =
-        [ Bulma.Layout.section NotSpaced
+        [ Html.map UiMsg (Ui.toastMessage ui)
+        , Bulma.Layout.section NotSpaced
             []
             [ Html.map UiMsg (Ui.navbar ui session)
             , Html.map PageMsg (pageView page)

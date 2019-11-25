@@ -7,7 +7,10 @@ import Html.Events exposing (..)
 
 layout : List (Html msg) -> Html msg
 layout html =
-    div [ class "columns is-centered", style "margin" "1.5em" ]
+    div
+        [ class "columns is-centered"
+        , style "margin" "1.5em"
+        ]
         [ div [ class "column is-two-thirds" ] html ]
 
 

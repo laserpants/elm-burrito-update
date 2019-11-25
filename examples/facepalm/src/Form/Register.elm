@@ -6,6 +6,7 @@ import Burrito.Form as Form exposing (Validate, checkbox, inputField)
 import Burrito.Form.Validate as Validate
 import Burrito.Update exposing (Update)
 import Form.Error exposing (Error(..))
+import Helpers exposing (empty)
 import Helpers.Form exposing (..)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -151,13 +152,23 @@ view { fields, disabled, state } =
                          else
                             []
                         )
-                        []
+                        (if IsAvailable True == state then
+                            [ class "is-success" ]
+
+                         else
+                            []
+                        )
                         []
                         controlInput
                         Username
                         username
                         "Username"
                     , controlErrorHelp username
+                    , if IsAvailable True == state then
+                        controlHelp Success [] [ text "This username is available" ]
+
+                      else
+                        empty
                     ]
                 , Bulma.Form.field []
                     [ controlLabel [] [ text "Phone number" ]

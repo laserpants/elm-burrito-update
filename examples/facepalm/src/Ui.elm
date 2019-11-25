@@ -169,10 +169,6 @@ navbar { menuIsOpen } maybeSession =
         ]
 
 
-
---        |> Html.map toMsg
-
-
 spinner : Html msg
 spinner =
     div
