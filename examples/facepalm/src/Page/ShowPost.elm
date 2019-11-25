@@ -1,7 +1,7 @@
 module Page.ShowPost exposing (Msg(..), State, init, subscriptions, update, view)
 
 import Bulma.Modifiers exposing (..)
-import Burrito.Api as Api exposing (Resource(..))
+import Burrito.Api as Api exposing (Resource(..), apiDefaultHandlers)
 import Burrito.Api.Json as JsonApi
 import Burrito.Callback exposing (..)
 import Burrito.Form as Form exposing (Variant(..))
@@ -128,18 +128,12 @@ update msg { onCommentCreated } =
     case msg of
         PostApiMsg apiMsg ->
             inPostApi
-                (Api.update apiMsg
-                    { onSuccess = always save
-                    , onError = always save
-                    }
-                )
+                (Api.update apiMsg apiDefaultHandlers)
 
         CommentApiMsg apiMsg ->
             inCommentApi
                 (Api.update apiMsg
-                    { onSuccess = commentCreated
-                    , onError = always save
-                    }
+                    { apiDefaultHandlers | onSuccess = commentCreated }
                 )
 
         CommentFormMsg commentFormMsg ->

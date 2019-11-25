@@ -1,9 +1,9 @@
-module Helpers.Form exposing (controlErrorHelp, control, controlInput, controlPassword, controlTextArea)
+module Helpers.Form exposing (control, controlErrorHelp, controlInput, controlPassword, controlTextArea)
 
 import Bulma.Components exposing (..)
 import Bulma.Form exposing (Control, ControlInputModifiers, controlHelp, controlInput, controlInputModifiers, controlTextAreaModifiers)
 import Bulma.Modifiers exposing (..)
-import Burrito.Form as Form exposing (Msg, Field)
+import Burrito.Form as Form exposing (Field, Msg)
 import Form.Error as Error exposing (Error)
 import Html exposing (..)
 import Html.Attributes exposing (..)

@@ -1,4 +1,4 @@
-module Burrito.Api exposing (HttpMethod(..), Model, ModelUpdate, Msg(..), Request, RequestConfig, Resource(..), init, resetResource, sendRequest, sendSimpleRequest, setResource, update, updateResourceWith)
+module Burrito.Api exposing (HttpMethod(..), Model, ModelUpdate, Msg(..), Request, RequestConfig, Resource(..), apiDefaultHandlers, init, resetResource, sendRequest, sendSimpleRequest, setResource, update, updateResourceWith)
 
 import Burrito.Callback exposing (andApply)
 import Burrito.Update exposing (Update, andAddCmd, save, using)
@@ -112,6 +112,16 @@ sendSimpleRequest =
 resetResource : ModelUpdate resource a
 resetResource =
     setResource NotRequested
+
+
+apiDefaultHandlers :
+    { onError : Http.Error -> a1 -> Update a1 msg1 t1
+    , onSuccess : resource -> a -> Update a msg t
+    }
+apiDefaultHandlers =
+    { onSuccess = always save
+    , onError = always save
+    }
 
 
 update :
