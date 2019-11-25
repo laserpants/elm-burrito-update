@@ -1,6 +1,6 @@
 module Data.Session exposing (Session, decoder)
 
-import Data.DbRecord exposing (..)
+import Data.DbRecord exposing (DbRecord, dbRecordDecoder)
 import Data.User as User exposing (User)
 import Json.Decode as Json exposing (field)
 

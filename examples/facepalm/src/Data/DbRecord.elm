@@ -1,4 +1,4 @@
-module Data.DbRecord exposing (..)
+module Data.DbRecord exposing (DbRecord, dbRecordDecoder)
 
 import Json.Decode as Json exposing (field, int)
 

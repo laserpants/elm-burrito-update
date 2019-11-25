@@ -4,12 +4,10 @@ import Bulma.Components exposing (..)
 import Bulma.Elements exposing (..)
 import Bulma.Modifiers exposing (..)
 import Burrito.Update exposing (..)
-import Data.Session exposing (Session)
 import Helpers exposing (empty)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
-import Maybe.Extra as Maybe
 import Process
 import Task
 import Ui.Toast
