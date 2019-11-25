@@ -2,7 +2,6 @@ module Helpers.Api exposing (errorToString, requestErrorMessage)
 
 import Bulma.Components exposing (..)
 import Bulma.Modifiers exposing (..)
-import Burrito.Api as Api
 import Html exposing (Html, text)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)

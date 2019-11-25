@@ -2,25 +2,21 @@ module Page.Login exposing (..)
 
 import Bulma.Columns exposing (columnsModifiers, narrowColumnModifiers)
 import Bulma.Components exposing (..)
-import Bulma.Form exposing (controlCheckBox, controlHelp, controlInput, controlInputModifiers, controlLabel, controlPassword, controlTextArea, controlTextAreaModifiers)
 import Bulma.Modifiers exposing (..)
-import Burrito.Api as Api exposing (..)
+import Burrito.Api as Api exposing (Resource(..))
 import Burrito.Api.Json as JsonApi
 import Burrito.Callback exposing (..)
 import Burrito.Form as Form exposing (Variant(..))
 import Burrito.Update exposing (..)
 import Data.Session as Session exposing (Session)
-import Form.Error as Error
 import Form.Login as LoginForm exposing (Fields(..))
 import Helpers exposing (empty)
-import Helpers.Api exposing (..)
-import Helpers.Form exposing (..)
+import Helpers.Api exposing (requestErrorMessage)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
 import Http
 import Json.Decode as Json
-import Maybe.Extra as Maybe
 
 
 type Msg

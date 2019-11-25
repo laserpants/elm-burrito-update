@@ -1,4 +1,4 @@
-module Helpers exposing (..)
+module Helpers exposing (andIf, empty, when)
 
 import Burrito.Update exposing (..)
 import Html exposing (..)

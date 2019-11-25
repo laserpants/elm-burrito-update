@@ -35,7 +35,7 @@ control__ ctrlAttrs inputAttrs children input tag field ph =
             }
 
         attributes =
-            inputAttrs ++ [ placeholder ph ] ++ Form.inputAttrs tag field
+            placeholder ph :: inputAttrs ++ Form.inputAttrs tag field
     in
     input modifiers ctrlAttrs attributes children
 
@@ -64,6 +64,6 @@ controlTextArea_ tag field ph =
             }
 
         attributes =
-            [ placeholder ph ] ++ Form.inputAttrs tag field
+            placeholder ph :: Form.inputAttrs tag field
     in
     controlTextArea modifiers [] attributes []

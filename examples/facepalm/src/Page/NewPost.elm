@@ -1,15 +1,13 @@
 module Page.NewPost exposing (Msg(..), State, init, subscriptions, update, view)
 
-import Bulma.Form exposing (controlInputModifiers, controlTextAreaModifiers)
-import Bulma.Modifiers exposing (..)
-import Burrito.Api as Api exposing (..)
+import Burrito.Api as Api exposing (Resource(..))
 import Burrito.Api.Json as JsonApi
 import Burrito.Callback exposing (..)
 import Burrito.Form as Form
 import Burrito.Update exposing (..)
 import Data.Post as Post exposing (Post)
 import Form.NewPost as NewPostForm
-import Helpers exposing (..)
+import Helpers exposing (empty)
 import Helpers.Api exposing (requestErrorMessage)
 import Html exposing (..)
 import Html.Attributes exposing (..)

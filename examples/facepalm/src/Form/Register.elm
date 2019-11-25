@@ -1,6 +1,6 @@
-module Form.Register exposing (..)
+module Form.Register exposing (Data, Fields(..), Model, ModelUpdate, Msg, UsernameStatus(..), init, toJson, validate, view)
 
-import Bulma.Form exposing (controlCheckBox, controlEmail, controlHelp, controlInput, controlInputModifiers, controlLabel, controlPassword, controlPhone, controlTextArea, controlTextAreaModifiers)
+import Bulma.Form exposing (controlCheckBox, controlHelp, controlInput, controlLabel)
 import Bulma.Modifiers exposing (..)
 import Burrito.Form as Form exposing (Validate, checkbox, inputField)
 import Burrito.Form.Validate as Validate

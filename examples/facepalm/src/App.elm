@@ -7,8 +7,8 @@ import Bulma.Modifiers exposing (..)
 import Burrito.Callback exposing (..)
 import Burrito.Router as Router
 import Burrito.Update exposing (..)
-import Data.Comment as Comment exposing (Comment)
-import Data.Post as Post exposing (Post)
+import Data.Comment exposing (Comment)
+import Data.Post exposing (Post)
 import Data.Session as Session exposing (Session)
 import Helpers exposing (andIf, when)
 import Html exposing (..)
@@ -23,7 +23,6 @@ import Ports
 import Route exposing (Route(..), fromUrl)
 import Ui exposing (Toast)
 import Ui.Page
-import Ui.Toast
 import Url exposing (Url)
 
 
@@ -316,7 +315,7 @@ handleAuthResponse maybeSession =
 
 
 handlePostAdded : Post -> StateUpdate a
-handlePostAdded post =
+handlePostAdded _ =
     redirect "/"
         >> andThen
             (inUi
@@ -327,7 +326,7 @@ handlePostAdded post =
 
 
 handleCommentCreated : Comment -> StateUpdate a
-handleCommentCreated comment =
+handleCommentCreated _ =
     inUi
         (Ui.showToast
             { message = "Your comment has been received.", color = Info }

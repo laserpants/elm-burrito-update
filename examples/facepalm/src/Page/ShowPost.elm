@@ -1,6 +1,5 @@
 module Page.ShowPost exposing (Msg(..), State, init, subscriptions, update, view)
 
-import Bulma.Form exposing (controlCheckBox, controlHelp, controlInput, controlInputModifiers, controlLabel, controlPassword, controlTextArea, controlTextAreaModifiers)
 import Bulma.Modifiers exposing (..)
 import Burrito.Api as Api exposing (Resource(..))
 import Burrito.Api.Json as JsonApi
@@ -10,7 +9,7 @@ import Burrito.Update exposing (..)
 import Data.Comment as Comment exposing (Comment)
 import Data.Post as Post exposing (Post)
 import Form.Comment as CommentForm exposing (Fields(..))
-import Helpers exposing (..)
+import Helpers exposing (empty)
 import Helpers.Api exposing (requestErrorMessage)
 import Html exposing (..)
 import Html.Attributes exposing (..)
@@ -162,11 +161,8 @@ subscriptions _ =
 view : State -> Html Msg
 view { postApi, commentApi, commentForm } =
     let
-        { disabled } =
-            commentForm
-
         loading =
-            Api.Requested == postApi.resource || disabled
+            Api.Requested == postApi.resource || commentForm.disabled
 
         commentItem { email, body } =
             [ p

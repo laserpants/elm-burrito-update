@@ -1,4 +1,4 @@
-module Form.Comment exposing (..)
+module Form.Comment exposing (Data, Fields(..), Model, ModelUpdate, Msg, init, toJson, validate, view)
 
 import Bulma.Form exposing (controlCheckBox, controlHelp, controlInput, controlInputModifiers, controlLabel, controlPassword, controlTextArea, controlTextAreaModifiers)
 import Bulma.Modifiers exposing (..)
@@ -72,7 +72,7 @@ validate =
 
 
 view : Model -> Html Msg
-view { fields, disabled, submitted } =
+view { fields, disabled } =
     Form.lookup2 fields
         Email
         Body

@@ -122,10 +122,7 @@ toastMessage { toast } =
             Ui.Toast.container notification
 
 
-
---navbar : Maybe Session -> { a | isHomePage : Bool, isNewPostPage : Bool, isAboutPage : Bool } -> State -> (Msg -> msg) -> Html msg
-
-
+navbar : State -> Maybe Session -> Html Msg
 navbar { menuIsOpen } maybeSession =
     let
         burger =
