@@ -1,6 +1,6 @@
-module Burrito.Api.Collection.Json exposing (..)
+module Burrito.Api.Collection.Json exposing (JsonRequestConfig(..), envelopeDecoder, init)
 
-import Burrito.Api as Api exposing (Msg(..))
+import Burrito.Api exposing (Msg(..))
 import Burrito.Api.Collection as Collection exposing (Collection, Envelope, Msg)
 import Burrito.Update exposing (..)
 import Http

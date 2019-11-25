@@ -1,4 +1,4 @@
-module Page exposing (..)
+module Page exposing (Msg(..), Page(..), subscriptions, view)
 
 import Html exposing (..)
 import Page.Home as HomePage

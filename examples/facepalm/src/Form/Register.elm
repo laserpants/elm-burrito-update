@@ -91,6 +91,7 @@ validate usernameStatus =
 
         validateUsername =
             Validate.stringNotEmpty MustNotBeEmpty
+                |> Validate.andThen (Validate.alphanumeric NonAlphanumChar)
                 |> Validate.andThen
                     (always
                         << (case usernameStatus of
@@ -164,7 +165,7 @@ view { fields, disabled, state } =
                         username
                         "Username"
                     , controlErrorHelp username
-                    , if IsAvailable True == state then
+                    , if Form.Valid == username.status && IsAvailable True == state then
                         controlHelp Success [] [ text "This username is available" ]
 
                       else

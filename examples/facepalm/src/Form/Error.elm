@@ -9,6 +9,7 @@ type Error
     | MustMatchPassword
     | PasswordTooShort
     | UsernameTaken
+    | NonAlphanumChar
 
 
 toString : Error -> String
@@ -34,3 +35,6 @@ toString error =
 
         UsernameTaken ->
             "This username is already taken"
+
+        NonAlphanumChar ->
+            "Only alphanumeric characters are allowed"

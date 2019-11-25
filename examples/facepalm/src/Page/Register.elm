@@ -1,4 +1,4 @@
-module Page.Register exposing (..)
+module Page.Register exposing (Msg(..), State, StateUpdate, init, update, subscriptions, view)
 
 import Bulma.Columns exposing (columnModifiers, columnsModifiers)
 import Bulma.Components exposing (..)
@@ -144,28 +144,28 @@ validateUsernameField =
         )
 
 
-checkUsernameAvailability : StateUpdate a
-checkUsernameAvailability =
+checkUsernameAvailability : Variant -> StateUpdate a
+checkUsernameAvailability username =
     using
         (\{ form, takenUsernames } ->
             let
-                queryName name =
-                    if String.isEmpty name then
-                        setUsernameStatus Blank
-
-                    else if Set.member name takenUsernames then
-                        setUsernameStatus (IsAvailable False)
-                            >> andThen validateUsernameField
-
-                    else
-                        let
-                            encodedMsg =
-                                Encode.encode 0 (websocketIsAvailableQuery name)
-                        in
-                        setUsernameStatus Unknown
-                            >> andAddCmd (Ports.websocketOut encodedMsg)
+                name =
+                    Form.asString username
             in
-            queryName (usernameFieldValue form.fields)
+            if String.isEmpty name then
+                setUsernameStatus Blank
+
+            else if Set.member name takenUsernames then
+                setUsernameStatus (IsAvailable False)
+                    >> andThen validateUsernameField
+
+            else
+                let
+                    encodedMsg =
+                        Encode.encode 0 (websocketIsAvailableQuery name)
+                in
+                setUsernameStatus Unknown
+                    >> andAddCmd (Ports.websocketOut encodedMsg)
         )
 
 
@@ -188,8 +188,8 @@ update msg { onRegistrationComplete } =
                 )
                 >> andThen
                     (case registerFormMsg of
-                        Form.Input Username _ ->
-                            checkUsernameAvailability
+                        Form.Input Username name ->
+                            checkUsernameAvailability name
 
                         _ ->
                             save

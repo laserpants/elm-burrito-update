@@ -1,6 +1,6 @@
 module Data.User exposing (User, decoder)
 
-import Json.Decode as Json exposing (bool, field, int, string)
+import Json.Decode as Json exposing (bool, field, string)
 
 
 type alias User =

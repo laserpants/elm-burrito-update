@@ -2,7 +2,7 @@ module Form.NewPost exposing (Data, Fields(..), Model, ModelUpdate, Msg, init, t
 
 import Bulma.Form exposing (controlLabel)
 import Bulma.Modifiers exposing (..)
-import Burrito.Form as Form exposing (Validate, checkbox, inputField)
+import Burrito.Form as Form exposing (Validate, inputField)
 import Burrito.Form.Validate as Validate
 import Burrito.Update exposing (Update)
 import Form.Error exposing (Error(..))

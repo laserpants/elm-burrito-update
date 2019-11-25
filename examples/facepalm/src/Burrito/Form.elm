@@ -284,7 +284,7 @@ update msg { onSubmit } =
                                 )
                                 >> validate state (Just target)
 
-                        Focus target ->
+                        Focus _ ->
                             \fields_ -> ( fields_, Nothing, Nothing )
                    )
                 |> (\( fields_, maybeData, _ ) ->

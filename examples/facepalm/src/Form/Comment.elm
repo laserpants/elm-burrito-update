@@ -1,8 +1,8 @@
 module Form.Comment exposing (Data, Fields(..), Model, ModelUpdate, Msg, init, toJson, validate, view)
 
-import Bulma.Form exposing (controlCheckBox, controlHelp, controlInput, controlInputModifiers, controlLabel, controlPassword, controlTextArea, controlTextAreaModifiers)
+import Bulma.Form exposing (controlLabel)
 import Bulma.Modifiers exposing (..)
-import Burrito.Form as Form exposing (Validate, checkbox, inputField)
+import Burrito.Form as Form exposing (Validate, inputField)
 import Burrito.Form.Validate as Validate
 import Burrito.Update exposing (Update)
 import Form.Error exposing (Error(..))

@@ -1,6 +1,6 @@
 module Burrito.Form.Validate exposing (..)
 
-import Burrito.Form exposing (Field, FieldList, Status(..), Variant(..), asBool, asString, lookupField)
+import Burrito.Form exposing (FieldList, Status(..), Variant(..), asBool, asString, lookupField)
 import Regex exposing (Regex)
 
 
@@ -135,6 +135,15 @@ email error str _ =
         Err error
 
 
+alphanumeric : err -> String -> FieldList tag err -> Result err String
+alphanumeric error str _ =
+    if String.all Char.isAlphaNum str then
+        Ok str
+
+    else
+        Err error
+
+
 mustBeChecked : err -> Bool -> FieldList tag err -> Result err Bool
 mustBeChecked error checked _ =
     if True == checked then
@@ -156,3 +165,5 @@ mustMatchField tag error str fields =
 
         _ ->
             Err error
+
+

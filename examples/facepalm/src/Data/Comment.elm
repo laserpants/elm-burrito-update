@@ -1,6 +1,6 @@
 module Data.Comment exposing (Comment, decoder)
 
-import Json.Decode as Json exposing (field, int, string)
+import Json.Decode as Json exposing (field, string)
 
 
 type alias Comment =
