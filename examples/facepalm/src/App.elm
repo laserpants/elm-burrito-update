@@ -10,7 +10,6 @@ import Burrito.Update exposing (..)
 import Data.Comment exposing (Comment)
 import Data.Post exposing (Post)
 import Data.Session as Session exposing (Session)
-import Helpers exposing (andIf, when)
 import Html exposing (..)
 import Json.Decode as Json
 import Maybe.Extra as Maybe
