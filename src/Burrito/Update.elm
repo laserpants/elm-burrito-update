@@ -3,17 +3,15 @@ module Burrito.Update exposing
     , andThen, sequence
     , andMap, ap, map2, map3, map4, map5, map6, map7
     , run, run2, run3
-    , andAddCmd, using, with, andWith, andUsing
+    , andAddCmd, using, with, when, andWith, andUsing, andIf
     )
 
 {-| Monadic-style interface for state updates.
 
-> In standard use, you will not need the third type parameter of `Update`. See [`Burrito.Update.Simple`](Burrito.Update.Simple) in that case.
-
 
 # Update
 
-@docs Update, save, addCmd, map, mapCmd, join, kleisli
+@docs Update, save, addCmd, map, mapCmd, join, kleisli, when
 
 
 ## Chaining Updates
@@ -35,7 +33,7 @@ These functions address the need to map over functions of more than one argument
 
 # Pointfree Helpers
 
-@docs andAddCmd, using, with, andWith, andUsing
+@docs andAddCmd, using, with, andWith, andUsing, andIf
 
 -}
 
@@ -264,6 +262,17 @@ using f model =
     f model model
 
 
+{-| Run an update if the given condition is `True`, otherwise do nothing.
+-}
+when : Bool -> (a -> Update a msg t) -> a -> Update a msg t
+when cond f =
+    if cond then
+        f
+
+    else
+        save
+
+
 {-| Shortcut for `\fun -> andThen << with fun`
 -}
 andWith : (b -> c) -> (c -> b -> Update a msg t) -> Update b msg t -> Update a msg t
@@ -276,6 +285,13 @@ andWith get =
 andUsing : (b -> b -> Update a msg t) -> Update b msg t -> Update a msg t
 andUsing =
     andThen << using
+
+
+{-| Shortcut for `\cond -> andThen << when cond`
+-}
+andIf : Bool -> (a -> Update a msg t) -> Update a msg t -> Update a msg t
+andIf cond =
+    andThen << when cond
 
 
 exec : Update a msg t -> ( a, Cmd msg )
