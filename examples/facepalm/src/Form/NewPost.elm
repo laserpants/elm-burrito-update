@@ -6,7 +6,7 @@ import Burrito.Form as Form exposing (Validate, inputField)
 import Burrito.Form.Validate as Validate
 import Burrito.Update exposing (Update)
 import Form.Error exposing (Error(..))
-import Helpers.Form exposing (..)
+import Helpers.Form
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -80,13 +80,13 @@ view { fields, disabled, submitted } =
                 [ Html.Attributes.disabled disabled ]
                 [ Bulma.Form.field []
                     [ controlLabel [] [ text "Title" ]
-                    , controlInput_ Title title "Title"
-                    , controlErrorHelp title
+                    , Helpers.Form.controlInput Title title "Title"
+                    , Helpers.Form.controlErrorHelp title
                     ]
                 , Bulma.Form.field []
                     [ controlLabel [] [ text "Body" ]
-                    , controlTextArea_ Body body "Body"
-                    , controlErrorHelp body
+                    , Helpers.Form.controlTextArea Body body "Body"
+                    , Helpers.Form.controlErrorHelp body
                     ]
                 , Bulma.Form.field []
                     [ div [ class "control" ]

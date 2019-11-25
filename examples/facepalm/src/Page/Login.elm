@@ -1,4 +1,4 @@
-module Page.Login exposing (Msg(..), State, StateUpdate, init, update, subscriptions, view)
+module Page.Login exposing (Msg(..), State, StateUpdate, init, subscriptions, update, view)
 
 import Bulma.Columns exposing (columnsModifiers, narrowColumnModifiers)
 import Bulma.Components exposing (..)

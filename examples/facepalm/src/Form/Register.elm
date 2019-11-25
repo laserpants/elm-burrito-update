@@ -7,7 +7,7 @@ import Burrito.Form.Validate as Validate
 import Burrito.Update exposing (Update)
 import Form.Error exposing (Error(..))
 import Helpers exposing (empty)
-import Helpers.Form exposing (..)
+import Helpers.Form
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -136,17 +136,17 @@ view { fields, disabled, state } =
                 [ Html.Attributes.disabled disabled ]
                 [ Bulma.Form.field []
                     [ controlLabel [] [ text "Name" ]
-                    , controlInput_ Name name "Name"
-                    , controlErrorHelp name
+                    , Helpers.Form.controlInput Name name "Name"
+                    , Helpers.Form.controlErrorHelp name
                     ]
                 , Bulma.Form.field []
                     [ controlLabel [] [ text "Email" ]
-                    , controlInput_ Email email "Email"
-                    , controlErrorHelp email
+                    , Helpers.Form.controlInput Email email "Email"
+                    , Helpers.Form.controlErrorHelp email
                     ]
                 , Bulma.Form.field []
                     [ controlLabel [] [ text "Username" ]
-                    , control__
+                    , Helpers.Form.control
                         (if Unknown == state then
                             [ class "is-loading" ]
 
@@ -164,7 +164,7 @@ view { fields, disabled, state } =
                         Username
                         username
                         "Username"
-                    , controlErrorHelp username
+                    , Helpers.Form.controlErrorHelp username
                     , if Form.Valid == username.status && IsAvailable True == state then
                         controlHelp Success [] [ text "This username is available" ]
 
@@ -173,18 +173,18 @@ view { fields, disabled, state } =
                     ]
                 , Bulma.Form.field []
                     [ controlLabel [] [ text "Phone number" ]
-                    , controlInput_ PhoneNumber phoneNumber "Phone number"
-                    , controlErrorHelp phoneNumber
+                    , Helpers.Form.controlInput PhoneNumber phoneNumber "Phone number"
+                    , Helpers.Form.controlErrorHelp phoneNumber
                     ]
                 , Bulma.Form.field []
                     [ controlLabel [] [ text "Password" ]
-                    , controlPassword_ Password password "Password"
-                    , controlErrorHelp password
+                    , Helpers.Form.controlPassword Password password "Password"
+                    , Helpers.Form.controlErrorHelp password
                     ]
                 , Bulma.Form.field []
                     [ controlLabel [] [ text "Confirm password" ]
-                    , controlPassword_ PasswordConfirmation passwordConfirmation "Confirm password"
-                    , controlErrorHelp passwordConfirmation
+                    , Helpers.Form.controlPassword PasswordConfirmation passwordConfirmation "Confirm password"
+                    , Helpers.Form.controlErrorHelp passwordConfirmation
                     ]
                 , Bulma.Form.field []
                     [ controlCheckBox False
@@ -192,7 +192,7 @@ view { fields, disabled, state } =
                         (Form.checkboxAttrs AgreeWithTerms agreeWithTerms)
                         []
                         [ text "I agree with terms and conditions" ]
-                    , controlErrorHelp agreeWithTerms
+                    , Helpers.Form.controlErrorHelp agreeWithTerms
                     ]
                 , Bulma.Form.field []
                     [ div [ class "control" ]

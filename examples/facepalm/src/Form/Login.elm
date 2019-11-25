@@ -1,7 +1,7 @@
 module Form.Login exposing (Data, Fields(..), Model, ModelUpdate, Msg, init, toJson, validate, view)
 
 import Bulma.Components exposing (..)
-import Bulma.Form exposing (controlLabel, controlCheckBox)
+import Bulma.Form exposing (controlCheckBox, controlLabel)
 import Bulma.Modifiers exposing (..)
 import Burrito.Form as Form exposing (Validate, checkbox, inputField)
 import Burrito.Form.Validate as Validate
@@ -88,13 +88,13 @@ view { fields, disabled } =
                 [ Html.Attributes.disabled disabled ]
                 [ Bulma.Form.field []
                     [ controlLabel [] [ text "Email address" ]
-                    , controlInput_ Email email "Email"
-                    , controlErrorHelp email
+                    , Helpers.Form.controlInput Email email "Email"
+                    , Helpers.Form.controlErrorHelp email
                     ]
                 , Bulma.Form.field []
                     [ controlLabel [] [ text "Password" ]
-                    , controlPassword_ Password password "Password"
-                    , controlErrorHelp password
+                    , Helpers.Form.controlPassword Password password "Password"
+                    , Helpers.Form.controlErrorHelp password
                     ]
                 , Bulma.Form.field []
                     [ controlCheckBox False
@@ -102,7 +102,7 @@ view { fields, disabled } =
                         (Form.checkboxAttrs RememberMe rememberMe)
                         []
                         [ text "Remember me" ]
-                    , controlErrorHelp rememberMe
+                    , Helpers.Form.controlErrorHelp rememberMe
                     ]
                 , Bulma.Form.field []
                     [ div [ class "control" ]

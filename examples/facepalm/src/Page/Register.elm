@@ -1,4 +1,4 @@
-module Page.Register exposing (Msg(..), State, StateUpdate, init, update, subscriptions, view)
+module Page.Register exposing (Msg(..), State, StateUpdate, init, subscriptions, update, view)
 
 import Bulma.Columns exposing (columnModifiers, columnsModifiers)
 import Bulma.Components exposing (..)
@@ -147,7 +147,7 @@ validateUsernameField =
 checkUsernameAvailability : Variant -> StateUpdate a
 checkUsernameAvailability username =
     using
-        (\{ form, takenUsernames } ->
+        (\{ takenUsernames } ->
             let
                 name =
                     Form.asString username
