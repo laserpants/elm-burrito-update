@@ -93,7 +93,7 @@ validate usernameStatus =
                 |> Validate.andThen
                     (always
                         << (case usernameStatus of
-                                IsAvailable available ->
+                                IsAvailable False ->
                                     always (Err UsernameTaken)
 
                                 _ ->

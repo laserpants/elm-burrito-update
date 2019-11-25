@@ -141,6 +141,14 @@ usernameFieldValue =
         >> Maybe.withDefault ""
 
 
+validateUsernameField : StateUpdate a
+validateUsernameField =
+    inRegisterForm
+        (Form.validateField Username
+            >> andThen (Form.setFieldDirty Username False)
+        )
+
+
 checkUsernameAvailability : StateUpdate a
 checkUsernameAvailability =
     using
@@ -151,7 +159,8 @@ checkUsernameAvailability =
                         setUsernameStatus Blank
 
                     else if Set.member name takenUsernames then
-                        setUsernameStatus (IsAvailable False)
+                        setUsernameStatus (IsAvailable False) 
+                            >> andThen validateUsernameField
 
                     else
                         let
@@ -182,27 +191,25 @@ update msg { onRegistrationComplete } =
                     { onSubmit = handleSubmit
                     }
                 )
-                >> andThen checkUsernameAvailability
+                >> andThen
+                    (case registerFormMsg of
+                        Form.Input Username _ ->
+                            checkUsernameAvailability
+
+                        _ ->
+                            save
+                    )
 
         WebsocketMsg websocketMsg ->
             case Json.decodeString websocketMessageDecoder websocketMsg of
                 Ok (WebSocketUsernameAvailableResponse { username, available }) ->
                     using
                         (\{ form } ->
-                            (if username == usernameFieldValue form.fields then
-                                setUsernameStatus (IsAvailable available)
-
-                             else
-                                save
-                            )
-                                >> andThen
-                                    (if not available then
-                                        setUsernameTaken username
-
-                                     else
-                                        save
-                                    )
+                            setUsernameStatus (IsAvailable available)
+                                |> when (username == usernameFieldValue form.fields)
                         )
+                        >> andIf (not available) (setUsernameTaken username)
+                        >> andThen validateUsernameField
 
                 _ ->
                     save

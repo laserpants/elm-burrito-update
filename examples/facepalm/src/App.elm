@@ -10,6 +10,7 @@ import Burrito.Update exposing (..)
 import Data.Comment as Comment exposing (Comment)
 import Data.Post as Post exposing (Post)
 import Data.Session as Session exposing (Session)
+import Helpers exposing (andIf, when)
 import Html exposing (..)
 import Json.Decode as Json
 import Maybe.Extra as Maybe
@@ -281,11 +282,8 @@ handleRouteChange url maybeRoute =
     in
     using
         (\{ router } ->
-            if Just Login /= router.route then
+            when (Just Login /= router.route)
                 resetRedirect
-
-            else
-                save
         )
         >> andThen changePage
         >> andThen (inUi Ui.closeMenu)
@@ -314,13 +312,7 @@ handleAuthResponse maybeSession =
     in
     setSession maybeSession
         >> andThen (updateSessionStorage maybeSession)
-        >> andThen
-            (if authenticated then
-                returnToRestrictedUrl
-
-             else
-                save
-            )
+        >> andIf authenticated returnToRestrictedUrl
 
 
 handlePostAdded : Post -> StateUpdate a
@@ -411,12 +403,6 @@ pageView page =
 
 
 view : State -> Document Msg
-
-
-
---view ({ page, session, ui } as state) =
-
-
 view { page, session, ui } =
     { title = "Welcome to Facepalm"
     , body =
@@ -424,8 +410,6 @@ view { page, session, ui } =
             []
             [ Html.map UiMsg (Ui.navbar ui session)
             , Html.map PageMsg (pageView page)
-
-            --            , text (Debug.toString state)
             ]
         ]
     }

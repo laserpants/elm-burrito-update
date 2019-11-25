@@ -136,7 +136,7 @@ view { api, form } =
                     , message { messageModifiers | color = Info }
                         [ style "max-width" "360px" ]
                         [ messageBody []
-                            [ text "This is a demo. Log in with email address 'test@test.com' and password 'test'." ]
+                            [ text "This is just a demo. Log in with email address 'test@test.com' and password 'test'." ]
                         ]
                     , case api.resource of
                         Error error ->

@@ -7,7 +7,6 @@ import Burrito.Api.Json as JsonApi
 import Burrito.Callback exposing (..)
 import Burrito.Form as Form
 import Burrito.Update exposing (..)
-import Burrito.Update.Form as Form
 import Data.Post as Post exposing (Post)
 import Form.NewPost as NewPostForm
 import Helpers exposing (..)

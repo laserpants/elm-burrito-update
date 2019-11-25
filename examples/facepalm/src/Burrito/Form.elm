@@ -136,14 +136,19 @@ type alias ModelUpdate field err data a =
     ModelExtraUpdate field err data () a
 
 
-insertAsFieldsIn :
-    ModelExtra field err data state
-    -> FieldList field err
+
+--insertAsFieldsIn :
+--    ModelExtra field err data state
+--    -> FieldList field err
+--    -> Update (ModelExtra field err data state) msg a
+--insertAsFieldsIn model fields =
+--    save { model | fields = fields }
+
+
+setFields :
+    FieldList field err
+    -> ModelExtra field err data state
     -> Update (ModelExtra field err data state) msg a
-insertAsFieldsIn model fields =
-    save { model | fields = fields }
-
-
 setFields fields model =
     save { model | fields = fields }
 
@@ -164,6 +169,11 @@ applyToField target fun =
                 field
             )
         )
+
+
+withField : field -> (Field err -> Field err) -> ModelExtraUpdate field err data state a
+withField target fun =
+    with .fields (setFields << applyToField target fun)
 
 
 setSubmitted : Bool -> ModelExtraUpdate field error data state a
@@ -230,7 +240,7 @@ init validate fields =
         }
 
 
-reset : ModelExtra field err data state -> Update (ModelExtra field err data state) msg a
+reset : ModelExtraUpdate field err data state a
 reset model =
     save
         { model
@@ -238,6 +248,20 @@ reset model =
             , disabled = False
             , submitted = False
         }
+
+
+validateField : field -> ModelExtraUpdate field err data state a
+validateField field =
+    using
+        (\{ validate, state, fields } ->
+            validate state (Just field) fields
+                |> (\( fields_, _, _ ) -> setFields fields_)
+        )
+
+
+setFieldDirty : field -> Bool -> ModelExtraUpdate field err data state a
+setFieldDirty tag dirty =
+    withField tag (\field -> { field | dirty = dirty })
 
 
 update : Msg field -> { onSubmit : data -> a } -> ModelExtraUpdate field err data state a

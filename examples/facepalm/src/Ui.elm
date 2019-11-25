@@ -5,7 +5,7 @@ import Bulma.Elements exposing (..)
 import Bulma.Modifiers exposing (..)
 import Burrito.Update exposing (..)
 import Data.Session exposing (Session)
-import Helpers exposing (empty)
+import Helpers exposing (empty, when)
 import Html exposing (..)
 import Html.Attributes exposing (..)
 import Html.Events exposing (..)
@@ -104,11 +104,7 @@ update msg =
                             save
 
                         Just ( toastId, _ ) ->
-                            if id == toastId then
-                                dismissToast
-
-                            else
-                                save
+                            when (id == toastId) dismissToast
                 )
 
 
