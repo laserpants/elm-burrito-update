@@ -13,6 +13,7 @@ import Data.Session as Session exposing (Session)
 import Html exposing (..)
 import Json.Decode as Json
 import Maybe.Extra as Maybe
+import Page exposing (Msg(..), Page(..))
 import Page.Home as HomePage
 import Page.Login as LoginPage
 import Page.NewPost as NewPostPage
@@ -21,38 +22,20 @@ import Page.ShowPost as ShowPostPage
 import Ports
 import Route exposing (Route(..), fromUrl)
 import Ui exposing (Toast)
-import Ui.Page
+import Ui.Navbar exposing (navbar)
 import Url exposing (Url)
-
-
-type PageMsg
-    = HomePageMsg HomePage.Msg
-    | NewPostPageMsg NewPostPage.Msg
-    | ShowPostPageMsg ShowPostPage.Msg
-    | LoginPageMsg LoginPage.Msg
-    | RegisterPageMsg RegisterPage.Msg
 
 
 type Msg
     = RouterMsg Router.Msg
     | UiMsg Ui.Msg
-    | PageMsg PageMsg
+    | PageMsg Page.Msg
 
 
 type alias Flags =
     { session : String
     , basePath : String
     }
-
-
-type Page
-    = PageNotFound
-    | HomePage HomePage.State
-    | NewPostPage NewPostPage.State
-    | ShowPostPage ShowPostPage.State
-    | LoginPage LoginPage.State
-    | RegisterPage RegisterPage.State
-    | AboutPage
 
 
 type alias State =
@@ -124,7 +107,7 @@ inUi doUpdate state =
 
 
 inPage :
-    (msg -> PageMsg)
+    (msg -> Page.Msg)
     -> (page -> Page)
     -> Update page msg (StateUpdate a)
     -> StateUpdate a
@@ -173,35 +156,10 @@ notifyUrlChange =
     update << RouterMsg << Router.UrlChange
 
 
-pageSubscriptions : Page -> Sub PageMsg
-pageSubscriptions page =
-    case page of
-        PageNotFound ->
-            Sub.none
-
-        HomePage homePageState ->
-            Sub.map HomePageMsg (HomePage.subscriptions homePageState)
-
-        NewPostPage newPostPageState ->
-            Sub.map NewPostPageMsg (NewPostPage.subscriptions newPostPageState)
-
-        ShowPostPage showPostPageState ->
-            Sub.map ShowPostPageMsg (ShowPostPage.subscriptions showPostPageState)
-
-        LoginPage loginPageState ->
-            Sub.map LoginPageMsg (LoginPage.subscriptions loginPageState)
-
-        RegisterPage registerPageState ->
-            Sub.map RegisterPageMsg (RegisterPage.subscriptions registerPageState)
-
-        AboutPage ->
-            Sub.none
-
-
 subscriptions : State -> Sub Msg
 subscriptions { page } =
     Sub.batch
-        [ Sub.map PageMsg (pageSubscriptions page)
+        [ Sub.map PageMsg (Page.subscriptions page)
         ]
 
 
@@ -353,62 +311,49 @@ update msg =
                         ( NewPostPageMsg newPostPageMsg, NewPostPage newPostPageState ) ->
                             inPage NewPostPageMsg
                                 NewPostPage
-                                (NewPostPage.update newPostPageMsg { onPostAdded = handlePostAdded } newPostPageState)
+                                (NewPostPage.update newPostPageMsg
+                                    { onPostAdded = handlePostAdded }
+                                    newPostPageState
+                                )
 
                         ( LoginPageMsg loginPageMsg, LoginPage loginPageState ) ->
                             inPage LoginPageMsg
                                 LoginPage
-                                (LoginPage.update loginPageMsg { onAuthResponse = handleAuthResponse } loginPageState)
+                                (LoginPage.update loginPageMsg
+                                    { onAuthResponse = handleAuthResponse }
+                                    loginPageState
+                                )
 
                         ( RegisterPageMsg registerPageMsg, RegisterPage registerPageState ) ->
                             inPage RegisterPageMsg
                                 RegisterPage
-                                (RegisterPage.update registerPageMsg { onRegistrationComplete = always (redirect "/login") } registerPageState)
+                                (RegisterPage.update registerPageMsg
+                                    { onRegistrationComplete = always (redirect "/login") }
+                                    registerPageState
+                                )
 
                         ( ShowPostPageMsg showPostPageMsg, ShowPostPage showPostPageState ) ->
                             inPage ShowPostPageMsg
                                 ShowPostPage
-                                (ShowPostPage.update showPostPageMsg { onCommentCreated = handleCommentCreated } showPostPageState)
+                                (ShowPostPage.update showPostPageMsg
+                                    { onCommentCreated = handleCommentCreated }
+                                    showPostPageState
+                                )
 
                         _ ->
                             save
                 )
 
 
-pageView : Page -> Html PageMsg
-pageView page =
-    case page of
-        PageNotFound ->
-            Ui.Page.container "Error 404" [ text "That means we couldn’t find this page." ]
-
-        HomePage homePageState ->
-            Html.map HomePageMsg (HomePage.view homePageState)
-
-        NewPostPage newPostPageState ->
-            Html.map NewPostPageMsg (NewPostPage.view newPostPageState)
-
-        ShowPostPage showPostPageState ->
-            Html.map ShowPostPageMsg (ShowPostPage.view showPostPageState)
-
-        LoginPage loginPageState ->
-            Html.map LoginPageMsg (LoginPage.view loginPageState)
-
-        RegisterPage registerPageState ->
-            Html.map RegisterPageMsg (RegisterPage.view registerPageState)
-
-        AboutPage ->
-            Ui.Page.container "About" [ text "Welcome to Facepalm. A place to meet weird people while keeping all your personal data safe." ]
-
-
 view : State -> Document Msg
-view { page, session, ui } =
+view { ui, page, session } =
     { title = "Welcome to Facepalm"
     , body =
         [ Html.map UiMsg (Ui.toastMessage ui)
         , Bulma.Layout.section NotSpaced
             []
-            [ Html.map UiMsg (Ui.navbar ui session)
-            , Html.map PageMsg (pageView page)
+            [ Html.map UiMsg (navbar ui page session)
+            , Html.map PageMsg (Page.view page)
             ]
         ]
     }

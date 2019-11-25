@@ -1,4 +1,4 @@
-module Ui exposing (Msg(..), State, StateUpdate, Toast, closeMenu, dismissToast, init, navbar, showInfoToast, showToast, spinner, toastMessage, toggleMenu, update)
+module Ui exposing (Msg(..), State, StateUpdate, Toast, closeMenu, dismissToast, init, showInfoToast, showToast, spinner, toastMessage, toggleMenu, update)
 
 import Bulma.Components exposing (..)
 import Bulma.Elements exposing (..)
@@ -123,50 +123,6 @@ toastMessage { toast } =
                         [ text message ]
             in
             Ui.Toast.container notification
-
-
-navbar : State -> Maybe Session -> Html Msg
-navbar { menuIsOpen } maybeSession =
-    let
-        burger =
-            navbarBurger menuIsOpen
-                [ class "has-text-white", onClick ToggleMenu ]
-                [ span [] [], span [] [], span [] [] ]
-
-        buttons =
-            if Maybe.isNothing maybeSession then
-                [ p [ class "control" ]
-                    [ a [ class "button is-primary", href "/register" ] [ text "Register" ] ]
-                , p [ class "control" ]
-                    [ a [ class "button is-light", href "/login" ] [ text "Log in" ] ]
-                ]
-
-            else
-                [ p [ class "control" ]
-                    [ a [ class "button is-primary", href "/logout" ] [ text "Log out" ] ]
-                ]
-    in
-    fixedNavbar Top
-        { navbarModifiers | color = Info }
-        []
-        [ navbarBrand []
-            burger
-            [ navbarItem False [] [ h5 [ class "title is-5" ] [ a [ class "has-text-white", href "/" ] [ text "Facepalm" ] ] ] ]
-        , navbarMenu menuIsOpen
-            []
-            [ navbarStart [ class "is-unselectable" ]
-                [ navbarItemLink True [ href "/" ] [ text "Home" ]
-                , navbarItemLink False [ href "/about" ] [ text "About" ]
-                , navbarItemLink False [ href "/posts/new" ] [ text "New post" ]
-
-                --[ navbarItemLink page.isHomePage [ href "/" ] [ text "Home" ]
-                --, navbarItemLink page.isAboutPage [ href "/about" ] [ text "About" ]
-                --, navbarItemLink page.isNewPostPage [ href "/posts/new" ] [ text "New post" ]
-                ]
-            , navbarEnd []
-                [ navbarItem False [] [ div [ class "field is-grouped" ] buttons ] ]
-            ]
-        ]
 
 
 spinner : Html msg
