@@ -29,8 +29,7 @@ These functions address the need to map over functions of more than one argument
 
 ## Callbacks
 
-Callbacks to allow for information to be passed _up_ in the update tree.
-See the `hello-button` example for basic use.
+Callbacks allow for information to be passed _up_ in the update tree.
 
 @docs apply, runCallbacks, andApply
 
