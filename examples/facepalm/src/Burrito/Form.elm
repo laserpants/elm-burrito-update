@@ -1,6 +1,5 @@
 module Burrito.Form exposing (..)
 
-import Burrito.Callback exposing (..)
 import Burrito.Update exposing (..)
 import Html exposing (..)
 import Html.Attributes as Attributes exposing (..)

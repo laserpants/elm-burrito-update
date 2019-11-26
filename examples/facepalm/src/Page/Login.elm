@@ -5,7 +5,6 @@ import Bulma.Components exposing (..)
 import Bulma.Modifiers exposing (..)
 import Burrito.Api as Api exposing (Resource(..))
 import Burrito.Api.Json as JsonApi
-import Burrito.Callback exposing (..)
 import Burrito.Form as Form exposing (Variant(..))
 import Burrito.Update exposing (..)
 import Data.Session as Session exposing (Session)

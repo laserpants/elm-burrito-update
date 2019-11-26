@@ -3,7 +3,6 @@ module Page.ShowPost exposing (Msg(..), State, init, subscriptions, update, view
 import Bulma.Modifiers exposing (..)
 import Burrito.Api as Api exposing (Resource(..), apiDefaultHandlers)
 import Burrito.Api.Json as JsonApi
-import Burrito.Callback exposing (..)
 import Burrito.Form as Form exposing (Variant(..))
 import Burrito.Update exposing (..)
 import Data.Comment as Comment exposing (Comment)

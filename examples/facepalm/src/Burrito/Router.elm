@@ -2,8 +2,7 @@ module Burrito.Router exposing (Msg(..), State, StateUpdate, init, redirect, upd
 
 import Browser exposing (UrlRequest)
 import Browser.Navigation as Navigation
-import Burrito.Callback exposing (andApply)
-import Burrito.Update exposing (Update, addCmd, save, using)
+import Burrito.Update exposing (Update, addCmd, andApply, save, using)
 import Url exposing (Url)
 
 

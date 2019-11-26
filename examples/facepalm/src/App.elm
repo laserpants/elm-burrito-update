@@ -4,7 +4,6 @@ import Browser exposing (Document)
 import Browser.Navigation as Navigation
 import Bulma.Layout exposing (SectionSpacing(..))
 import Bulma.Modifiers exposing (..)
-import Burrito.Callback exposing (..)
 import Burrito.Router as Router
 import Burrito.Update exposing (..)
 import Data.Comment exposing (Comment)

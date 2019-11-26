@@ -1,8 +1,7 @@
 module Page.NewPost exposing (Msg(..), State, init, subscriptions, update, view)
 
-import Burrito.Api as Api exposing (Resource(..))
+import Burrito.Api as Api exposing (Resource(..), apiDefaultHandlers)
 import Burrito.Api.Json as JsonApi
-import Burrito.Callback exposing (..)
 import Burrito.Form as Form
 import Burrito.Update exposing (..)
 import Data.Post as Post exposing (Post)
@@ -91,9 +90,7 @@ update msg { onPostAdded } =
         ApiMsg apiMsg ->
             inPostApi
                 (Api.update apiMsg
-                    { onSuccess = apply << onPostAdded
-                    , onError = always save
-                    }
+                    { apiDefaultHandlers | onSuccess = apply << onPostAdded }
                 )
 
         FormMsg newPostFormMsg ->

@@ -1,9 +1,10 @@
 module Burrito.Update exposing
-    ( Update, save, addCmd, map, mapCmd, join, kleisli
+    ( Update, save, addCmd, map, mapCmd, join, kleisli, when
     , andThen, sequence
     , andMap, ap, map2, map3, map4, map5, map6, map7
+    , apply, runCallbacks, andApply
     , run, run2, run3
-    , andAddCmd, using, with, when, andWith, andUsing, andIf
+    , andAddCmd, using, with, andWith, andUsing, andIf
     )
 
 {-| Monadic-style interface for state updates.
@@ -24,6 +25,14 @@ module Burrito.Update exposing
 These functions address the need to map over functions of more than one argument.
 
 @docs andMap, ap, map2, map3, map4, map5, map6, map7
+
+
+## Callbacks
+
+Callbacks to allow for information to be passed _up_ in the update tree.
+See the `hello-button` example for basic use.
+
+@docs apply, runCallbacks, andApply
 
 
 # Program Integration
@@ -297,6 +306,31 @@ andIf cond =
 exec : Update a msg t -> ( a, Cmd msg )
 exec ( model, cmds, _ ) =
     ( model, Cmd.batch cmds )
+
+
+{-| Append a callback to the list of functions that subsequently get applied to the returned value using `runCallbacks`.
+-}
+apply : t -> a -> Update a msg t
+apply call model =
+    ( model, [], [ call ] )
+
+
+{-| Sequentially compose the list of monadic functions (callbacks) produced by a nested update call.
+-}
+runCallbacks : Update a msg (a -> Update a msg t) -> Update a msg t
+runCallbacks ( model1, cmds1, calls1 ) =
+    let
+        ( model2, cmds2, calls2 ) =
+            sequence calls1 model1
+    in
+    ( model2, cmds1 ++ cmds2, calls2 )
+
+
+{-| Shortcut for `andThen << apply`
+-}
+andApply : t -> Update a msg t -> Update a msg t
+andApply =
+    andThen << apply
 
 
 {-| Translate a function that returns an `Update` into one that returns a plain `( model, cmd )` pair.

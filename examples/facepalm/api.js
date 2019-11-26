@@ -158,5 +158,4 @@ xhook.before(function(request, callback) {
   } else {
     callback();
   }
-
 });

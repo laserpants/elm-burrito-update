@@ -4,7 +4,6 @@ import Bulma.Elements exposing (..)
 import Bulma.Modifiers exposing (..)
 import Burrito.Api as Api exposing (Resource(..))
 import Burrito.Api.Json as JsonApi
-import Burrito.Callback exposing (..)
 import Burrito.Update exposing (..)
 import Data.DbRecord exposing (DbRecord, dbRecordDecoder)
 import Data.Post as Post exposing (Post)

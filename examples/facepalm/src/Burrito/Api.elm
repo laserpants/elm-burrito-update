@@ -1,7 +1,6 @@
 module Burrito.Api exposing (HttpMethod(..), Model, ModelUpdate, Msg(..), Request, RequestConfig, Resource(..), apiDefaultHandlers, init, resetResource, sendRequest, sendSimpleRequest, setResource, update, updateResourceWith)
 
-import Burrito.Callback exposing (andApply)
-import Burrito.Update exposing (Update, andAddCmd, save, using)
+import Burrito.Update exposing (Update, andAddCmd, andApply, save, using)
 import Http exposing (Expect, emptyBody)
 
 
