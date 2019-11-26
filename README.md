@@ -31,7 +31,7 @@ module Main exposing (main)
 
 import Browser exposing (Document)
 import Burrito.Update.Browser exposing (document)
-import Burrito.Update.Simple exposing (..)
+import Burrito.Update exposing (..)
 import Html exposing (..)
 import Html.Events exposing (..)
 
@@ -50,24 +50,24 @@ type alias Model =
     }
 
 
-setMessage : String -> Model -> Update Model msg
+setMessage : String -> Model -> Update Model msg a
 setMessage message model =
     save { model | message = message }
 
 
-incrementCounter : Model -> Update Model msg
+incrementCounter : Model -> Update Model msg a
 incrementCounter model =
     save { model | count = model.count + 1 }
 
 
-init : Flags -> Update Model Msg
+init : Flags -> Update Model Msg a
 init () =
     save Model
         |> andMap (save "Nothing much going on here.")
         |> andMap (save 0)
 
 
-update : Msg -> Model -> Update Model Msg
+update : Msg -> Model -> Update Model Msg a
 update msg model =
     case msg of
         ButtonClicked ->
