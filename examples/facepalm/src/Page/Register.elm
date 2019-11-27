@@ -3,7 +3,7 @@ module Page.Register exposing (Msg(..), State, StateUpdate, init, subscriptions,
 import Bulma.Columns exposing (columnModifiers, columnsModifiers)
 import Bulma.Components exposing (..)
 import Bulma.Modifiers exposing (..)
-import Burrito.Api as Api exposing (Resource(..))
+import Burrito.Api as Api exposing (Resource(..), apiDefaultHandlers)
 import Burrito.Api.Json as JsonApi
 import Burrito.Form as Form exposing (Variant(..))
 import Burrito.Update exposing (..)
@@ -173,11 +173,7 @@ update msg { onRegistrationComplete } =
     case msg of
         ApiMsg apiMsg ->
             inRegisterApi
-                (Api.update apiMsg
-                    { onSuccess = apply << onRegistrationComplete
-                    , onError = always save
-                    }
-                )
+                (Api.update apiMsg { apiDefaultHandlers | onSuccess = apply << onRegistrationComplete })
 
         FormMsg registerFormMsg ->
             inRegisterForm

@@ -163,9 +163,9 @@ join ( ( model, cmds1, extra1 ), cmds2, extra2 ) =
     ( model, cmds1 ++ cmds2, extra2 ++ extra1 )
 
 
-{-| Sequential composition of updates. This function is especially useful in combination
+{-| Sequential composition of updates. This function is especially useful in conjunction
 with the forward pipe operator (`|>`), for writing code in the style of pipelines. To chain
-updates, we compose functions of the form `something -> State -> Update State msg t`:
+updates, we compose functions of the form `State -> Update State msg t`:
 
     say : String -> State -> Update State msg t
     say what state = ...

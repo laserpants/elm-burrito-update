@@ -92,13 +92,16 @@ update msg { onAuthResponse } =
         handleApiResponse maybeSession =
             inLoginForm Form.reset
                 >> andApply (onAuthResponse maybeSession)
+
+        handleError _ =
+            handleApiResponse Nothing
     in
     case msg of
         ApiMsg apiMsg ->
             inAuthApi
                 (Api.update apiMsg
                     { onSuccess = handleApiResponse << Just
-                    , onError = always (handleApiResponse Nothing)
+                    , onError = handleError
                     }
                 )
 

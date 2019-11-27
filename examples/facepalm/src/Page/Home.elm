@@ -2,7 +2,7 @@ module Page.Home exposing (Msg(..), State, init, subscriptions, update, view)
 
 import Bulma.Elements exposing (..)
 import Bulma.Modifiers exposing (..)
-import Burrito.Api as Api exposing (Resource(..))
+import Burrito.Api as Api exposing (Resource(..), apiDefaultHandlers)
 import Burrito.Api.Json as JsonApi
 import Burrito.Update exposing (..)
 import Data.DbRecord exposing (DbRecord, dbRecordDecoder)
@@ -70,11 +70,7 @@ update msg =
     case msg of
         ApiMsg apiMsg ->
             inPostsApi
-                (Api.update apiMsg
-                    { onSuccess = always save
-                    , onError = always save
-                    }
-                )
+                (Api.update apiMsg apiDefaultHandlers)
 
 
 subscriptions : State -> Sub Msg
