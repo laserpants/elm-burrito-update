@@ -2,8 +2,8 @@ module Main exposing (main)
 
 import Browser exposing (Document, UrlRequest)
 import Browser.Navigation as Navigation
+import Burrito.Update exposing (..)
 import Burrito.Update.Browser exposing (application)
-import Burrito.Update.Simple exposing (..)
 import Html exposing (..)
 import Html.Events exposing (..)
 import Url exposing (Url)
@@ -20,18 +20,18 @@ type alias Model =
     }
 
 
-setMessage : String -> Model -> Update Model msg
+setMessage : String -> Model -> Update Model msg a
 setMessage message model =
     save { model | message = message }
 
 
-init : () -> Url -> Navigation.Key -> Update Model Msg
+init : () -> Url -> Navigation.Key -> Update Model Msg a
 init () url key =
     save Model
         |> andMap (save "Nothing much going on here.")
 
 
-update : Msg -> Model -> Update Model Msg
+update : Msg -> Model -> Update Model Msg a
 update msg =
     case msg of
         ButtonClicked ->

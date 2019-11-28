@@ -1,8 +1,8 @@
 module Main exposing (main)
 
 import Browser exposing (Document)
+import Burrito.Update exposing (..)
 import Burrito.Update.Browser exposing (document)
-import Burrito.Update.Simple exposing (..)
 import Html exposing (..)
 import Html.Events exposing (..)
 
@@ -16,18 +16,18 @@ type alias Model =
     }
 
 
-setMessage : String -> Model -> Update Model msg
+setMessage : String -> Model -> Update Model msg a
 setMessage message model =
     save { model | message = message }
 
 
-init : () -> Update Model Msg
+init : () -> Update Model Msg a
 init () =
     save Model
         |> andMap (save "Nothing much going on here.")
 
 
-update : Msg -> Model -> Update Model Msg
+update : Msg -> Model -> Update Model Msg a
 update msg =
     case msg of
         ButtonClicked ->

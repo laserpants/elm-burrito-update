@@ -100,7 +100,7 @@ update msg { onAuthResponse } =
         ApiMsg apiMsg ->
             inAuthApi
                 (Api.update apiMsg
-                    { onSuccess = handleApiResponse << Just
+                    { onSuccess = \session -> handleApiResponse (Just session)
                     , onError = handleError
                     }
                 )

@@ -1,6 +1,6 @@
 module Burrito.Api.Collection exposing (..)
 
-import Burrito.Api as Api exposing (Resource(..))
+import Burrito.Api as Api exposing (Resource(..), apiDefaultHandlers)
 import Burrito.Update exposing (Update, andMap, andThen, mapCmd, runCallbacks, save, using, with)
 import Http exposing (Expect)
 
@@ -138,7 +138,7 @@ update : Msg item -> CollectionUpdate item a
 update msg =
     case msg of
         ApiMsg apiMsg ->
-            inApi (Api.update apiMsg { onSuccess = updateCurrentPage, onError = always save })
+            inApi (Api.update apiMsg { apiDefaultHandlers | onSuccess = updateCurrentPage })
 
         NextPage ->
             nextPage

@@ -1,7 +1,6 @@
 module Main exposing (..)
 
 import Browser exposing (Document)
-import Burrito.Callback exposing (..)
 import Burrito.Update exposing (..)
 import Burrito.Update.Browser exposing (document)
 import Html exposing (..)
@@ -9,7 +8,7 @@ import Html.Events exposing (..)
 
 
 
---
+-- Button
 
 
 type ButtonMsg

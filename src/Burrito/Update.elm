@@ -22,7 +22,7 @@ module Burrito.Update exposing
 
 ## Applicative Interface
 
-These functions address the need to map over functions of more than one argument.
+These functions address the need to map over functions having more than one argument.
 
 @docs andMap, ap, map2, map3, map4, map5, map6, map7
 
@@ -314,7 +314,7 @@ apply call model =
     ( model, [], [ call ] )
 
 
-{-| Sequentially compose the list of monadic functions (callbacks) produced by a nested update call.
+{-| Compose and apply the list of monadic functions (callbacks) produced by a nested update call.
 -}
 runCallbacks : Update a msg (a -> Update a msg t) -> Update a msg t
 runCallbacks ( model1, cmds1, calls1 ) =
