@@ -154,7 +154,7 @@ main =                                             -- [6]
         }
 ```
 
-The main takeaway here is that `Update` is as a type alias for the usual `( model, cmd )` tuple. However, as the extra `a` type parameter suggests, there is a bit more going on. More about this in due time.
+The main takeaway here is that `Update` is as a type alias for the usual `( Model, Cmd Msg )` tuple. However, as the extra `a` type parameter suggests, there is a bit more going on. More about this in due time.
 
 Let’s go through the changes from the original code:
 
