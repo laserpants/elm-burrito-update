@@ -258,7 +258,7 @@ update = ...
 
 ### Update API
 
-Many of the functions in `Burrito.Update`, like `andThen`, `map`, `map2`, `map3`, &hellip;, `map7`, and `andMap`, have semantics that resemble functions with identical names available in other Elm libraries written in the same style. 
+Many of the functions in `Burrito.Update`, like `andThen`, `map`, `map2`, `map3`, &hellip;, `map7`, and `andMap`, have semantics that resemble functions with identical names available in other Elm libraries written in the same style.
 
 #### map
 
@@ -416,8 +416,8 @@ update msg model =
     case msg of
         ApiMsg apiMsg ->
             model
-                |> inPostsApi 
-                      (Api.update apiMsg 
+                |> inPostsApi
+                      (Api.update apiMsg
                           { onSuccess = handleSuccess
                           , onError = handleError
                           }
@@ -443,7 +443,7 @@ update msg { onSuccess, onError } model =
 
 > <b>Tip:</b> As a shortcut, you can also write `andApply (onEvent foo)` instead of `andThen (apply (onEvent foo))`.
 
-There is one more step. 
+There is one more step.
 When `apply` is called, it just adds a partially applied function to a list of handlers. This list is the mysterious third component of the `Update` tuple.
 Here is how `Update` is defined:
 
@@ -468,15 +468,15 @@ inPostsApi doUpdate model =
 
 ### A note about pointfree style
 
-In some of the examples, so called *pointfree* style is used which makes the `model` (or `state`) argument implicit.
-Because of currying, in Elm we can often omit function arguments in the following way:
+Thanks to currying, in Elm we can often omit function arguments in the following way:
 
 ```elm
 f1 x = g x      <==>  f1 = g
 f2 x = g (h x)  <==>  f2 = g << h
 ```
 
-This type of conversion is known as [eta-reduction](https://en.wikipedia.org/wiki/Lambda_calculus#%CE%B7-reduction).
+This is known as *pointfree* style, and it is used in some of the examples included with this library to make the `model` (or `state`) argument implicit.
+The conversion described above is formally described by the notion of an [eta-reduction](https://en.wikipedia.org/wiki/Lambda_calculus#%CE%B7-reduction) in the Lambda calculus.
 
 > Pointfree style of programming favors function composition in such a way that one avoids presenting the actual arguments to which a function is applied. It allows the programmer to think about the program more abstractly and can (sometimes) lead to more readable program code.
 
