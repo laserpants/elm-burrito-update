@@ -550,4 +550,4 @@ For an in-depth treatment of the subject, see [this excellent paper](http://emor
 
 ## Credits
 
-Icon design by [https://www.flaticon.com/authors/smashicons"](Smashicons) from [https://www.flaticon.com](www.flaticon.com)
+Icon design by [Smashicons](https://www.flaticon.com/authors/smashicons) from [www.flaticon.com](https://www.flaticon.com)
