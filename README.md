@@ -258,7 +258,7 @@ update = ...
 
 ### Update API
 
-Many of the functions in `Burrito.Update`; like `andThen`, `map`, `map2`, `map3`, &hellip;, `map7`, and `andMap`; have semantics that resemble functions with identical names available in other Elm libraries written in the same style.
+Many of the functions in `Burrito.Update`; like `andThen`, `map`, `map2`, `map3`, &hellip;, `map7`, and `andMap`; have semantics that resemble those of functions with identical names available in other Elm libraries written in the same style.
 
 #### map
 
