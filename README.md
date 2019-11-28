@@ -161,7 +161,7 @@ Let’s go through the changes from the original code:
 1. Only `Document` is imported from the `Browser` module.
 2. Import `document` from `Burrito.Update.Browser` instead.
 3. Import (for now) `Update` from `Burrito.Update`.
-4. In `init`, Instead of the usual tuple, we return `Update Model Msg a`.
+4. In `init`, instead of the usual tuple, we return `Update Model Msg a`.
 5. The return type of `update` is also `Update Model Msg a`.
 6. Finally, the `main` function looks like in the original program, but note that `document` here refers to `Burrito.Update.Browser.document`.
 
@@ -258,7 +258,7 @@ update = ...
 
 ### Update API
 
-Many of the functions in `Burrito.Update`, like `andThen`, `map`, `map2`, `map3`, &hellip;, `map7`, and `andMap`, have semantics that resemble functions with identical names available in other Elm libraries written in the same style.
+Many of the functions in `Burrito.Update`; like `andThen`, `map`, `map2`, `map3`, &hellip;, `map7`, and `andMap`; have semantics that resemble functions with identical names available in other Elm libraries written in the same style.
 
 #### map
 
