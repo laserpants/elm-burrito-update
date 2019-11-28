@@ -2,9 +2,10 @@ module Burrito.Update exposing
     ( Update, save, addCmd, map, mapCmd, join, kleisli, when
     , andThen, sequence
     , andMap, ap, map2, map3, map4, map5, map6, map7
-    , apply, runCallbacks, andApply
+    , apply, runCallbacks
     , run, run2, run3
-    , andAddCmd, using, with, andWith, andUsing, andIf
+    , using, with
+    , andApply, andAddCmd, andWith, andUsing, andIf
     )
 
 {-| Monadic-style interface for state updates.
@@ -31,7 +32,7 @@ These functions address the need to map over functions having more than one argu
 
 Callbacks allow for information to be passed _up_ in the update tree.
 
-@docs apply, runCallbacks, andApply
+@docs apply, runCallbacks
 
 
 ## Program Integration
@@ -41,7 +42,12 @@ Callbacks allow for information to be passed _up_ in the update tree.
 
 ## Pointfree Helpers
 
-@docs andAddCmd, using, with, andWith, andUsing, andIf
+@docs using, with
+
+
+## Shortcuts
+
+@docs andApply, andAddCmd, andWith, andUsing, andIf
 
 -}
 
