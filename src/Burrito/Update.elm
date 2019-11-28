@@ -34,12 +34,12 @@ Callbacks allow for information to be passed _up_ in the update tree.
 @docs apply, runCallbacks, andApply
 
 
-# Program Integration
+## Program Integration
 
 @docs run, run2, run3
 
 
-# Pointfree Helpers
+## Pointfree Helpers
 
 @docs andAddCmd, using, with, andWith, andUsing, andIf
 
