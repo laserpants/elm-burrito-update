@@ -375,7 +375,7 @@ Note that it can be used from any function in our code that returns an `Update M
 
 Without the `ModelUpdate` helper (explained earlier), the type signature for `inPostsApi` would have been a lot more complicated:
 
-```
+```elm
 inPostsApi : (Api.Model Posts -> Update (Api.Model Posts) (Api.Msg Posts) a) -> Model -> Update Model Msg a
 ```
 
