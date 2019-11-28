@@ -3,7 +3,7 @@
 [![Build Status](https://img.shields.io/travis/laserpants/elm-burrito-update/master.svg?style=flat)](https://travis-ci.org/laserpants/elm-burrito-update)
 [![Version](https://img.shields.io/badge/elm--version-0.19-blue.svg?colorB=ff69b4)](http://elm-lang.org/)
 
-![Logo](logo.png)
+![Logo](https://raw.githubusercontent.com/laserpants/elm-burrito-update/master/logo.png)
 
 > This project brings together some conventions and idioms that help you write modular and scalable Elm applications; and provides a convenient programming interface to support those ideas.
 
