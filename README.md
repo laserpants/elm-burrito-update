@@ -17,7 +17,7 @@ elm install laserpants/elm-burrito-update
 
 ## Appetizer
 
-To get a flavor of what this library is all about, the following code snippets are from the [Facepalm example](#a-complete-application-example).
+To get a flavor of what this library is all about, the following code snippets are from the [example single-page application](#a-complete-application-example).
 At this point, it may not be so clear, but keep reading&hellip;
 
 ```elm
