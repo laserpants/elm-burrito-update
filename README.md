@@ -3,7 +3,7 @@
 [![Build Status](https://img.shields.io/travis/laserpants/elm-burrito-update/master.svg?style=flat)](https://travis-ci.org/laserpants/elm-burrito-update)
 [![Version](https://img.shields.io/badge/elm--version-0.19-blue.svg?colorB=ff69b4)](http://elm-lang.org/)
 
-<p><img src="logo.png" /></p>
+![Logo](logo.png)
 
 > This project brings together some conventions and idioms that help you write modular and scalable Elm applications; and provides a convenient programming interface to support those ideas.
 
@@ -537,14 +537,10 @@ This is a single-page (SPA) application that shows how to use this library to:
 
 ## Recipes
 
-<b>Work in progress:</b>
+**Work in progress:**
 See [github.com/laserpants/elm-burrito-recipes](https://github.com/laserpants/elm-burrito-recipes).
 
 Recipes are reusable pieces of functionality that can be integrated with your Burrito application. They rely on the the same coding style and conventions.
-
-<!--
-Many of the recipes used in the examples on this page are found in the `laserpants/elm-burrito-recipes` package, which is hosted at [github.com/laserpants/elm-burrito-recipes](https://github.com/laserpants/elm-burrito-recipes).
--->
 
 ## Etymology
 
@@ -554,4 +550,4 @@ For an in-depth treatment of the subject, see [this excellent paper](http://emor
 
 ## Credits
 
-<div>Icon design by <a href="https://www.flaticon.com/authors/smashicons" title="Smashicons">Smashicons</a> from <a href="https://www.flaticon.com/" title="Flaticon">www.flaticon.com</a></div>
+Icon design by [https://www.flaticon.com/authors/smashicons"](Smashicons) from [https://www.flaticon.com](www.flaticon.com)
