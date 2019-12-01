@@ -23,7 +23,7 @@ module Burrito.Update exposing
 
 ## Applicative Interface
 
-These functions address the need to map over functions having more than one argument.
+These functions address the need to map functions having more than one argument over some `Update`s.
 
 @docs andMap, ap, map2, map3, map4, map5, map6, map7
 
@@ -128,7 +128,7 @@ map7 f a b c d e =
     ap << map6 f a b c d e
 
 
-{-| Trying to map over a function `number -> number -> number`,
+{-| Trying to map a function `number -> number -> number` over two `Update`s , applying the first value
 
     map (+) (save 4)
 
