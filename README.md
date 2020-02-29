@@ -1,5 +1,6 @@
 > This project has been archived and is superseded by two separate libraries: [laserpants/elm-update-pipeline](https://github.com/laserpants/elm-update-pipeline) and [laserpants/elm-recipes](https://github.com/laserpants/elm-recipes)
-     
+
+---
 
 # Elm Burrito Update
 
