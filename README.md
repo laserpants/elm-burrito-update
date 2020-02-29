@@ -1,3 +1,6 @@
+> This project has been archived and is superseded by two separate libraries: [https://github.com/laserpants/elm-update-pipeline](aserpants/elm-update-pipeline) and [https://github.com/laserpants/elm-recipes](laserpants/elm-recipes)
+     
+
 # Elm Burrito Update
 
 [![Build Status](https://img.shields.io/travis/laserpants/elm-burrito-update/master.svg?style=flat)](https://travis-ci.org/laserpants/elm-burrito-update)
